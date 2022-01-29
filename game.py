@@ -1,7 +1,5 @@
 import pygame
 from config import *
-import math
-import random
 
 
 class Spritesheet:
@@ -18,7 +16,7 @@ class Spritesheet:
 class Player(pygame.sprite.Sprite):
     def _init_(self, game, x, y):
         self.game = game
-        self._layer = PLAYER_LAYER #tells pygame which layer the player will be in
+        self._layer = PLAYER_LAYER  # tells pygame which layer the player will be in
         self.groups = self.game.all_sprites
         pygame.sprite.Sprite.init(self, self.groups)
         self.x = x * TILESIZE
@@ -68,9 +66,9 @@ class Player(pygame.sprite.Sprite):
             if direction == "x":
                 hits = pygame.sprite.Spritecollide(self, self.game.blocks, False)
                 if hits:
-                    if self.x_change>0:
+                    if self.x_change > 0:
                         self.rect.x = hits[0].rect.left - self.rect.width
-                    if self.x_change<0:
+                    if self.x_change < 0:
                         self.rect.x = hits[0].rect.right
 
             if direction == "y":
@@ -84,7 +82,6 @@ class Player(pygame.sprite.Sprite):
 
 class Block(pygame.sprite.Sprite):
     def _init_(self, game, x, y):
-
         self.game = game
         self._layer = BLOCK_LAYER
         self.groups = self.game.all_sprites, self.game.blocks
@@ -102,7 +99,7 @@ class Block(pygame.sprite.Sprite):
         self.rect.y = self.y
 
         class Ground(pygame.sprite.Sprite):
-             def _init_(self, game, x, y):
+            def _init_(self, game, x, y):
                 self.game = game
                 self._layer = GROUND_LAYER
                 self.groups = self.game.all_sprites
