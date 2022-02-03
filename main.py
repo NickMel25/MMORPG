@@ -24,6 +24,8 @@ class Game:
                     Block(self, j, i)
                 if column == "P":
                     Player(self, j, i)
+                if column == "W":
+                    Water(self, j, i)
 
     def new(self):
         # a new game starts
@@ -34,6 +36,7 @@ class Game:
         self.enemies = pygame.sprite.LayeredUpdates()
         self.attacks = pygame.sprite.LayeredUpdates()
         self.createTileMap()
+
 
     def events(self):
         for event in pygame.event.get():
@@ -47,6 +50,7 @@ class Game:
     def draw(self):
         self.screen.fill(BLACK)
         self.all_sprites.draw(self.screen)
+
         self.clock.tick(FPS)
         pygame.display.update()
 
