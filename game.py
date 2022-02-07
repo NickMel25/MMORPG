@@ -61,15 +61,15 @@ class Player(pygame.sprite.Sprite):
         if keys[pygame.K_LEFT]:
             self.x_change -= PLAYER_SPEED
             self.facing = 'left'
-            self.sheet_coords = (0, 3 * self.height)
+            self.sheet_coords = (3, 3 * self.height+2.5)
         elif keys[pygame.K_RIGHT]:
             self.x_change += PLAYER_SPEED
             self.facing = 'right'
-            self.sheet_coords = (0, 2 * self.height)
+            self.sheet_coords = (3, 2 * self.height+2.5)
         elif keys[pygame.K_UP]:
             self.y_change -= PLAYER_SPEED
             self.facing = 'up'
-            self.sheet_coords = (0, self.height)
+            self.sheet_coords = (3, self.height+2.5)
         elif keys[pygame.K_DOWN]:
             self.y_change += PLAYER_SPEED
             self.facing = 'down'
