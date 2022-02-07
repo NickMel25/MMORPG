@@ -99,22 +99,6 @@ class Player(pygame.sprite.Sprite):
             self.rect.y = 0
 
 
-class Block(pygame.sprite.Sprite):
-    def __init__(self, game, x, y):
-        super().__init__(game.all_sprites, game.blocks)
-        self.game = game
-        self._layer = BLOCK_LAYER
-        self.x = x * TILESIZE
-        self.y = y * TILESIZE
-        self.width = TILESIZE
-        self.height = TILESIZE
-
-        self.image = self.game.terrain_spritesheet.get_sprite(960, 440, self.width, self.height)
-        self.rect = self.image.get_rect()
-        self.rect.x = self.x
-        self.rect.y = self.y
-
-
 class Ground(pygame.sprite.Sprite):
     def __init__(self, game, x, y):
         super().__init__(game.all_sprites)
@@ -128,6 +112,22 @@ class Ground(pygame.sprite.Sprite):
 
         self.image = self.game.terrain_spritesheet.get_sprite(64, 352, self.width, self.height)
 
+        self.rect = self.image.get_rect()
+        self.rect.x = self.x
+        self.rect.y = self.y
+
+
+class Block(pygame.sprite.Sprite):
+    def __init__(self, game, x, y):
+        super().__init__(game.all_sprites, game.blocks)
+        self.game = game
+        self._layer = BLOCK_LAYER
+        self.x = x * TILESIZE
+        self.y = y * TILESIZE
+        self.width = TILESIZE
+        self.height = TILESIZE
+
+        self.image = self.game.terrain_spritesheet.get_sprite(960, 440, self.width, self.height)
         self.rect = self.image.get_rect()
         self.rect.x = self.x
         self.rect.y = self.y

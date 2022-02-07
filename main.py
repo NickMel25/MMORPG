@@ -17,13 +17,16 @@ class Game:
         self.terrain_spritesheet = SpriteSheet('res/terrain.png')
 
     def createTileMap(self):
+        for y, row in enumerate(tilemap):
+            for x, column in enumerate(row):
+                Ground(self, x, y)
+
         for i, row in enumerate(tilemap):
             for j, column in enumerate(row):
-                Ground(self, j, i)
-                if column == "B":
-                    Block(self, j, i)
                 if column == "P":
                     Player(self, j, i)
+                if column == "B":
+                    Block(self, j, i)
                 if column == "W":
                     Water(self, j, i)
 
