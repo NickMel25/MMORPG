@@ -98,8 +98,13 @@ def key_input(input_rect,rect_name):
                 else:
                     text += event.unicode
 
-                text_surface = base_font.render(text, True, (255, 255, 255))
+                if rect_name == "password":
+                    pass_text = len(text)*'*'
+                else:
+                    pass_text = text
+                text_surface = base_font.render(pass_text, True, (255, 255, 255))
                 print(text_surface.get_width())
+                
                 
                 if text_surface.get_width() < input_rect.w:
                     screenblit(input_rect,input_rect.x,input_rect.y)
