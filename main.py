@@ -28,7 +28,6 @@ class Game:
                 if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_m:
                         self.level.toggle_menu()
-
             self.screen.fill(WATER_COLOR)
             self.level.run()
             pygame.display.update()

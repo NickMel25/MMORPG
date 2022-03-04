@@ -40,6 +40,9 @@ class Level:
         self.animation_player = AnimationPlayer()
         self.magic_player = MagicPlayer(self.animation_player)
 
+        # game over screen image
+        self.gameover = pygame.image.load('graphics/test/gameover.png').convert_alpha()
+
     def create_map(self):
         layouts = {
             'boundary': import_csv_layout('map/map_FloorBlocks.csv'),
@@ -152,6 +155,14 @@ class Level:
     def run(self):
         self.visible_sprites.custom_draw(self.player)
         self.ui.display(self.player)
+
+        if self.player.health <= 0:
+            bg_rect = pygame.Rect(240, 177.5, 800, 365)
+            pygame.draw.rect(self.display_surface, UI_BG_COLOR, bg_rect)
+            gameover_surf = self.gameover
+            gameover_rect = gameover_surf.get_rect(center=bg_rect.center)
+
+            self.display_surface.blit(gameover_surf, gameover_rect)
 
         if self.game_paused:
             self.upgrade.display()
