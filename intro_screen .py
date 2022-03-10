@@ -40,8 +40,8 @@ def display_screen():
     "switchregister" : input_box(191,41,login_x+299,login_y+10),
     "username" : input_box(421,35,login_x+40,login_y+143),
     "password" : input_box(421,35,login_x+40,login_y+286),
-    "apply" : input_box(191,41,login_x+10,login_y+450),
-    "cancel" : input_box(191,41,login_x+299,login_y+450),
+    "cancel" : input_box(191,41,login_x+10,login_y+450),
+    "apply" : input_box(191,41,login_x+299,login_y+450),
     } 
     pygame.display.flip()
 
@@ -139,8 +139,11 @@ def main():
                 if collides(rect_list[rect], event):
                     if rect == "username" or rect == "password":
                         pending = key_input(rect_list[rect],rect)
+                        continue
                     elif rect == "apply":
                         print("we need to connect this to the game")
+                        pending = Empty
+                    pending = Empty
 
 # ------------------------------------------------------------------------
 
