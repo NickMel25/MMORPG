@@ -157,7 +157,7 @@ class Level:
         self.ui.display(self.player)
 
         if self.player.health <= 0:
-            bg_rect = pygame.Rect(240, 177.5, 800, 365)
+            bg_rect = pygame.Rect(0, 0, 1280, 720)
             pygame.draw.rect(self.display_surface, UI_BG_COLOR, bg_rect)
             gameover_surf = self.gameover
             gameover_rect = gameover_surf.get_rect(center=bg_rect.center)
