@@ -51,7 +51,7 @@ class Level:
             'entities': import_csv_layout('map/map_Entities.csv')
         }
         graphics = {
-            'grass': import_folder('graphics/Grass'),
+            'grass': import_folder('graphics/grass'),
             'objects': import_folder('graphics/objects')
         }
 
@@ -64,6 +64,7 @@ class Level:
                         if style == 'boundary':
                             Tile((x, y), [self.obstacle_sprites], 'invisible')
                         if style == 'grass':
+                            print(graphics['grass'])
                             random_grass_image = choice(graphics['grass'])
                             Tile(
                                 (x, y),
