@@ -1,3 +1,4 @@
+import time
 import pygame
 from settings import *
 from tile import Tile
@@ -19,6 +20,7 @@ class Level:
         # get the display surface
         self.display_surface = pygame.display.get_surface()
         self.game_paused = False
+        self.game_over = False
 
         # sprite group setup
         self.visible_sprites = YSortCameraGroup()
@@ -157,12 +159,20 @@ class Level:
         self.ui.display(self.player)
 
         if self.player.health <= 0:
+            self.game_over = True
+
+            # show image "game over"
             bg_rect = pygame.Rect(0, 0, 1280, 720)
-            pygame.draw.rect(self.display_surface, UI_BG_COLOR, bg_rect)
             gameover_surf = self.gameover
             gameover_rect = gameover_surf.get_rect(center=bg_rect.center)
-
             self.display_surface.blit(gameover_surf, gameover_rect)
+
+            # draw button to restart game
+            pygame.draw.rect(self.display_surface, UI_BG_COLOR, [600, 385, 80, 30])
+            smallfont = pygame.font.SysFont(UI_FONT, 16)
+            text = smallfont.render('RESTART', True, TEXT_COLOR)
+            self.display_surface.blit(text, (615, 395))
+
 
         if self.game_paused:
             self.upgrade.display()

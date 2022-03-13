@@ -28,6 +28,13 @@ class Game:
                 if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_m:
                         self.level.toggle_menu()
+                if event.type == pygame.MOUSEBUTTONDOWN:
+                    if self.level.game_over:
+                        mouse = pygame.mouse.get_pos()
+                        if 605 <= mouse[0] <= 685 and 400 <= mouse[1] <= 430:
+                            game = Game()
+                            game.run()
+
             self.screen.fill(WATER_COLOR)
             self.level.run()
             pygame.display.update()
