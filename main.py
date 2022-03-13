@@ -31,9 +31,12 @@ class Game:
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     if self.level.game_over:
                         mouse = pygame.mouse.get_pos()
-                        if 605 <= mouse[0] <= 685 and 400 <= mouse[1] <= 430:
+                        if 540 <= mouse[0] <= 620 and 385 <= mouse[1] <= 415:
                             game = Game()
                             game.run()
+                        if 660 <= mouse[0] <= 740 and 385 <= mouse[1] <= 415:
+                            pygame.quit()
+                            sys.exit()
 
             self.screen.fill(WATER_COLOR)
             self.level.run()

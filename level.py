@@ -168,11 +168,16 @@ class Level:
             self.display_surface.blit(gameover_surf, gameover_rect)
 
             # draw button to restart game
-            pygame.draw.rect(self.display_surface, UI_BG_COLOR, [600, 385, 80, 30])
+            pygame.draw.rect(self.display_surface, UI_BG_COLOR, [540, 385, 80, 30])
             smallfont = pygame.font.SysFont(UI_FONT, 16)
             text = smallfont.render('RESTART', True, TEXT_COLOR)
-            self.display_surface.blit(text, (615, 395))
+            self.display_surface.blit(text, (552.5, 395))
 
+            # draw quit button
+            pygame.draw.rect(self.display_surface, UI_BG_COLOR, [660, 385, 80, 30])
+            smallfont = pygame.font.SysFont(UI_FONT, 16)
+            text = smallfont.render('QUIT', True, TEXT_COLOR)
+            self.display_surface.blit(text, (685, 395))
 
         if self.game_paused:
             self.upgrade.display()
