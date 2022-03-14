@@ -1,5 +1,5 @@
 import socket
-
+from threading import Thread
 
 server_IP = '192.168.117.198'
 server_port = 13372
@@ -26,3 +26,6 @@ def proccess(data):
     ans = receive()
     print(ans)
 
+def start_thread():
+    players_nearby_thread = Thread(target=receive, daemon=True)
+    players_nearby_thread.start()

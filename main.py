@@ -48,9 +48,11 @@ class Game:
             pygame.display.update()
             self.clock.tick(FPS)
             ans = Player.to_string(self.player)
-            if not ("right_idle" in ans.split(":") or "left_idle" in ans.split(":") or "down_idle" in ans.split(":") or "up_idle" in ans.split(":")):
-                udp_client.proccess(Player.to_string(self.player))
+            # if not ("right_idle" in ans.split(":") or "left_idle" in ans.split(":") or "down_idle" in ans.split(":") or "up_idle" in ans.split(":")):
+            udp_client.proccess(Player.to_string(self.player))
             
+
+            udp_client.start_thread()
 
 if __name__ == '__main__':
     game = Game()
