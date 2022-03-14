@@ -42,6 +42,9 @@ class Level:
 
         # game over screen image
         self.gameover = pygame.image.load('graphics/test/gameover.png').convert_alpha()
+    
+    def return_player(self):
+        return self.player
 
     def create_map(self):
         layouts = {
@@ -54,6 +57,8 @@ class Level:
             'grass': import_folder('graphics/grass'),
             'objects': import_folder('graphics/objects')
         }
+
+        username = input("please enter username")
 
         for style, layout in layouts.items():
             for row_index, row in enumerate(layout):
@@ -84,7 +89,7 @@ class Level:
                                     self.obstacle_sprites,
                                     self.create_attack,
                                     self.destroy_attack,
-                                    self.create_magic)
+                                    self.create_magic,username)
                             else:
                                 if col == '390':
                                     monster_name = 'bamboo'

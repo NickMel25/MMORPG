@@ -3,14 +3,14 @@ from settings import *
 from support import import_folder
 from entity import Entity
 
-
 class Player(Entity):
-    def __init__(self, pos, groups, obstacle_sprites, create_attack, destroy_attack, create_magic):
+    def __init__(self, pos, groups, obstacle_sprites, create_attack, destroy_attack, create_magic,username):
         super().__init__(groups)
         self.image = pygame.image.load('graphics/test/player.png').convert_alpha()
         self.rect = self.image.get_rect(topleft=pos)
         self.hitbox = self.rect.inflate(-6, HITBOX_OFFSET['player'])
 
+        self.username = username
         # graphics setup
         self.import_player_assets()
         self.status = 'down'
@@ -214,3 +214,6 @@ class Player(Entity):
         self.move(self.stats['speed'])
         self.energy_recovery()
 
+    def to_string(self):
+        #              username :direction (string):  is attacking  : direction (int): hitbox
+        return f"{self.username}:{self.status}:{self.attacking}:{self.direction}:{self.rect}"

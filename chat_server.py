@@ -3,18 +3,13 @@ import socket
 from datetime import datetime
 import threading
 
-ip = '10.0.0.185'
+ip = '192.168.117.198'
 port = 10001
 conn_list = {}
 server_address = (ip,port)
 chat_server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 chat_server.bind(server_address)
-
-# def __init__():
-#     global chat_server
-
-
-
+ 
 
 def connecting():
     global chat_server
@@ -46,6 +41,7 @@ def thread_handler(conn):
 
 def main():
     global chat_server
+    print("connecting")
     while True:
         conn = connecting()
         thread = threading.Thread(target=thread_handler,args=[conn])
@@ -55,4 +51,3 @@ def main():
 if __name__ == '__main__':
     main()
 
-21
