@@ -31,9 +31,11 @@ class Game:
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     if self.level.game_over:
                         mouse = pygame.mouse.get_pos()
+                        # restart game button
                         if 540 <= mouse[0] <= 620 and 385 <= mouse[1] <= 415:
                             game = Game()
                             game.run()
+                        # quit game button
                         if 660 <= mouse[0] <= 740 and 385 <= mouse[1] <= 415:
                             pygame.quit()
                             sys.exit()
