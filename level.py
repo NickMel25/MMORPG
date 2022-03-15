@@ -13,14 +13,17 @@ from particles import AnimationPlayer
 from magic import MagicPlayer
 from upgrade import Upgrade
 
-
 class Level:
     def __init__(self):
+
 
         # get the display surface
         self.display_surface = pygame.display.get_surface()
         self.game_paused = False
         self.game_over = False
+
+        image = pygame.image.load('graphics/player/down_idle/idle_down.png')
+        pygame.display.update()
 
         # sprite group setup
         self.visible_sprites = YSortCameraGroup()

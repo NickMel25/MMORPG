@@ -1,14 +1,17 @@
+from turtle import Screen
 import pygame, sys
 from player import Player
 from settings import *
 from level import Level
 import udp_client
 
+game = ''
 
 class Game:
+    level = ''
     def __init__(self):
-
         # general setup
+        global level
         pygame.init()
         self.screen = pygame.display.set_mode((WIDTH, HEIGTH))
         pygame.display.set_caption('MMO Game')
@@ -22,7 +25,8 @@ class Game:
         # main_sound.play(loops=-1)
 
     def run(self):
-
+        global game
+        
         udp_client.start_thread()
 
         while True:
@@ -45,16 +49,22 @@ class Game:
                             pygame.quit()
                             sys.exit()
 
+
+
             self.screen.fill(WATER_COLOR)
             self.level.run()
             pygame.display.update()
             self.clock.tick(FPS)
             ans = Player.to_string(self.player)
             udp_client.send(ans)
-            
 
-      
+
+           
+
+def main():
+    global game
+    game = Game() 
+    game.run()
 
 if __name__ == '__main__':
-    game = Game()
-    game.run()
+    main()

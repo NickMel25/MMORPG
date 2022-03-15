@@ -21,12 +21,7 @@ def proximity(username):
         if not (cli == username):
             if  client_list[username]["location"][0]-1250 < client_list[cli]["location"][0] <client_list[username]["location"][0]+1250 \
             and client_list[username]["location"][1]-750 < client_list[cli]["location"][1] <client_list[username]["location"][1]+750:
-            # print("cli is: "+cli)
-            # print("username is: "+username)
-            # # if cli's X is in range of username's X
-            # print(client_list[username]["location"][0]-1250 < client_list[cli]["location"][0] <client_list[username]["location"][0]+1250)
-            # # if cli's Y is in range of username's Y
-            # print(client_list[username]["location"][1]-750 < client_list[cli]["location"][1] <client_list[username]["location"][1]+750)
+         
                 in_proximity[cli] = client_list[cli]
                 print("in proximity")
     return in_proximity
@@ -70,14 +65,12 @@ def send(ans,conn):
 
 def receive():
         msg = udp_server.recvfrom(1024)
-        print(msg)
         return msg
 
 
 def main():
     while True:
         data = receive()
-        print(data)
         append(data)
         
         nearby = proximity(data[0].decode().split(":")[0])
