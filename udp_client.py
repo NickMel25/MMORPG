@@ -1,7 +1,7 @@
 import socket
 from threading import Thread
 
-server_IP = '10.0.0.169'
+server_IP = socket.gethostbyname(socket.gethostname())
 port = 12345
 server_port = 13372
 udp_client = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
