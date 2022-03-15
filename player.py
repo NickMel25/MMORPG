@@ -215,5 +215,5 @@ class Player(Entity):
         self.energy_recovery()
 
     def to_string(self):
-        #              username :direction (string):  is attacking  : direction (int): hitbox
-        return f"{self.username}:{self.status}:{self.attacking}:{self.direction}:{self.rect}"
+        #              username :direction(string):is attacking: direction (int)  : hitbox
+        return f"{self.username}:{self.status}:{self.attacking}:{self.rect.center}:{self.hitbox}"

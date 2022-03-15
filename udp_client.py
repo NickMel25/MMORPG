@@ -1,13 +1,18 @@
 import socket
 from threading import Thread
 
-server_IP = '192.168.117.198'
+server_IP = '10.0.0.169'
+port = 12345
 server_port = 13372
 udp_client = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+udp_client.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+udp_client.bind((server_IP,port))
+
 
 def recv_thread_handler():
-    data = receive()
-    data = data.decode()
+    while True:
+        data = receive()
+        print("lol")
 
 
 def receive():
@@ -27,5 +32,5 @@ def proccess(data):
     print(ans)
 
 def start_thread():
-    players_nearby_thread = Thread(target=receive, daemon=True)
-    players_nearby_thread.start()
+        players_nearby_thread = Thread(target=recv_thread_handler, daemon=True)
+        players_nearby_thread.start()

@@ -1,8 +1,9 @@
+from cgi import print_form
 from http import client
 import socket
 
 
-ip = socket.gethostbyname(socket.gethostname())
+ip = '0.0.0.0'
 port = 13372
 udp_server = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 udp_server.bind((ip,port))
@@ -15,10 +16,19 @@ print(ip)
 
 def proximity(username):
     in_proximity = {}
-    for user in client_list:
-        if not (user == username):
-            if  client_list[username][0]-1250 < client_list[user]["direction"][0]<client_list[username][0]+1250 and client_list[username][1]-750 < client_list[user]["direction"][1]-750<client_list[username][1]+750:
-                in_proximity[user] = client_list[user]
+    print(client_list[username]["location"])
+    for cli in client_list:
+        if not (cli == username):
+            if  client_list[username]["location"][0]-1250 < client_list[cli]["location"][0] <client_list[username]["location"][0]+1250 \
+            and client_list[username]["location"][1]-750 < client_list[cli]["location"][1] <client_list[username]["location"][1]+750:
+            # print("cli is: "+cli)
+            # print("username is: "+username)
+            # # if cli's X is in range of username's X
+            # print(client_list[username]["location"][0]-1250 < client_list[cli]["location"][0] <client_list[username]["location"][0]+1250)
+            # # if cli's Y is in range of username's Y
+            # print(client_list[username]["location"][1]-750 < client_list[cli]["location"][1] <client_list[username]["location"][1]+750)
+                in_proximity[cli] = client_list[cli]
+                print("in proximity")
     return in_proximity
 
 
@@ -34,16 +44,19 @@ def exists(username):
 
 
 def append(data):
+    temp = ''
     answers = data[0].decode().split(":")
     info_list = {}
     client_list[answers[0]]= info_list
     info_list["username"] = answers[0]
     info_list["direction"] = answers[1]
     info_list["attacking"] = answers[2]
-    info_list["location"] = answers[3]
+    temp = answers[3][1:-1]
+    temp =  tuple(map(int, temp.split(',')))
+    info_list["location"] = temp
     info_list["hitbox"] = answers[4]
     info_list["connection"] = data[1]
-    print(info_list["username"])
+
 
 
 def iterate_users(nearby,conn):
@@ -64,8 +77,8 @@ def receive():
 def main():
     while True:
         data = receive()
-        if not exists(data[0].decode().split(":")[0]):
-            append(data)
+        print(data)
+        append(data)
         
         nearby = proximity(data[0].decode().split(":")[0])
         nearby = make_string(nearby)
