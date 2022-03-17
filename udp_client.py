@@ -13,12 +13,13 @@ udp_client.bind((ip,port))
 
 
 
-def recv_thread_handler():
+def recv_thread_handler(player,level):
     while True:
         data = receive()
         data = data
         print(data)
-        client_performer.display_players(data)
+        location = client_performer.display_players(data,player,level)
+
 
 
 def receive():
@@ -37,6 +38,8 @@ def proccess(data):
     ans = receive()
     print(ans)
 
-def start_thread():
-        players_nearby_thread = Thread(target=recv_thread_handler, daemon=True)
-        players_nearby_thread.start()
+def start_thread(player,level):
+    # arr = {"player" : player,
+    #  "level" : level}
+    players_nearby_thread = Thread(target=recv_thread_handler, daemon=True, args=(player,level))
+    players_nearby_thread.start()

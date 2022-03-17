@@ -5,30 +5,33 @@ from settings import *
 from level import Level
 import udp_client
 
+
 game = ''
 
 class Game:
-    level = ''
+    player = ''
     def __init__(self):
         # general setup
-        global level
+        global player 
+
         pygame.init()
         self.screen = pygame.display.set_mode((WIDTH, HEIGTH))
         pygame.display.set_caption('MMO Game')
         self.clock = pygame.time.Clock()
         self.level = Level()
-        self.player = self.level.return_player()
+        player = self.level.return_player()
 
         # sound
         # main_sound = pygame.mixer.Sound('audio/main.ogg')
         # main_sound.set_volume(0.5)
         # main_sound.play(loops=-1)
 
+
     def run(self):
         global game
+        global player
+        udp_client.start_thread(player,self.level)
         
-        udp_client.start_thread()
-
         while True:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
@@ -55,7 +58,7 @@ class Game:
             self.level.run()
             pygame.display.update()
             self.clock.tick(FPS)
-            ans = Player.to_string(self.player)
+            ans = player.to_string()
             udp_client.send(ans)
 
 
@@ -63,7 +66,10 @@ class Game:
 
 def main():
     global game
-    game = Game() 
+    global player_stats
+    
+    game = Game()
+    # player_stats = player.to_string() 
     game.run()
 
 if __name__ == '__main__':

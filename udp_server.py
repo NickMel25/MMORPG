@@ -30,7 +30,7 @@ def proximity(username):
 def make_string(nearby):
     for name in nearby:
         user = nearby[name]
-        nearby[name] = f'{user["username"]}:{user["direction"]}:{user["attacking"]}:{user["location"]}:{user["hitbox"]}'
+        nearby[name] = f'{user["username"]}:{user["direction"]}:{user["attacking"]}:{user["location"]}:{user["hitbox"]}:{user["frame"]}'
     return nearby
 
 
@@ -50,6 +50,7 @@ def append(data):
     temp =  tuple(map(int, temp.split(',')))
     info_list["location"] = temp
     info_list["hitbox"] = answers[4]
+    info_list["frame"] = answers[5]
     info_list["connection"] = data[1]
 
 
