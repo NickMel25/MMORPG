@@ -1,18 +1,28 @@
 import socket
 from threading import Thread
+import client_performer
 
-server_IP = socket.gethostbyname(socket.gethostname())
+
+server_IP = '10.0.0.185'
+ip =socket.gethostbyname(socket.gethostname())
+
 port = 12345
 server_port = 13372
+
 udp_client = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 udp_client.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-udp_client.bind((server_IP,port))
+udp_client.bind((ip,port))
 
 
-def recv_thread_handler():
+
+
+def recv_thread_handler(player,level):
     while True:
         data = receive()
-        print("lol")
+        data = data
+        print(data)
+        location = client_performer.display_players(data,player,level)
+
 
 
 def receive():
@@ -31,6 +41,8 @@ def proccess(data):
     ans = receive()
     print(ans)
 
-def start_thread():
-        players_nearby_thread = Thread(target=recv_thread_handler, daemon=True)
-        players_nearby_thread.start()
+def start_thread(player,level):
+    # arr = {"player" : player,
+    #  "level" : level}
+    players_nearby_thread = Thread(target=recv_thread_handler, daemon=True, args=(player,level))
+    players_nearby_thread.start()

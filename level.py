@@ -12,15 +12,21 @@ from enemy import Enemy
 from particles import AnimationPlayer
 from magic import MagicPlayer
 from upgrade import Upgrade
-
+# import globals
 
 class Level:
     def __init__(self):
+
+
+        self.player_sprites = pygame.sprite.Group()
 
         # get the display surface
         self.display_surface = pygame.display.get_surface()
         self.game_paused = False
         self.game_over = False
+
+        image = pygame.image.load('graphics/player/down_idle/idle_down.png')
+        pygame.display.update()
 
         # sprite group setup
         self.visible_sprites = YSortCameraGroup()
@@ -163,6 +169,7 @@ class Level:
         self.visible_sprites.custom_draw(self.player)
         self.ui.display(self.player)
 
+
         if self.player.health <= 0:
             self.game_over = True
 
@@ -220,6 +227,10 @@ class YSortCameraGroup(pygame.sprite.Group):
         for sprite in sorted(self.sprites(), key=lambda sprite: sprite.rect.centery):
             offset_pos = sprite.rect.topleft - self.offset
             self.display_surface.blit(sprite.image, offset_pos)
+
+        
+    def players_draw(self,players):
+            pass
 
     def enemy_update(self, player):
         enemy_sprites = [sprite for sprite in self.sprites() if
