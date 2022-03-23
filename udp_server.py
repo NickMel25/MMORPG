@@ -1,5 +1,6 @@
 from cgi import print_form
 from http import client
+from math import floor
 import socket
 
 
@@ -50,7 +51,7 @@ def append(data):
     temp =  tuple(map(int, temp.split(',')))
     info_list["location"] = temp
     info_list["hitbox"] = answers[4]
-    info_list["frame"] = answers[5]
+    info_list["frame"] = int(floor(float(answers[5])))
     info_list["connection"] = data[1]
 
 

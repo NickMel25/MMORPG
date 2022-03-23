@@ -3,7 +3,7 @@ import socket
 from datetime import datetime
 import threading
 
-ip = '192.168.117.198'
+ip = '0.0.0.0'
 port = 10001
 conn_list = {}
 server_address = (ip,port)

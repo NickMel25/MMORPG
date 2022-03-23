@@ -1,4 +1,3 @@
-from turtle import Screen
 import pygame, sys
 from player import Player
 from settings import *
@@ -20,11 +19,6 @@ class Game:
         self.clock = pygame.time.Clock()
         self.level = Level()
         player = self.level.return_player()
-
-        # sound
-        # main_sound = pygame.mixer.Sound('audio/main.ogg')
-        # main_sound.set_volume(0.5)
-        # main_sound.play(loops=-1)
 
 
     def run(self):
