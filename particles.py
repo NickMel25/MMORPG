@@ -10,6 +10,10 @@ class AnimationPlayer:
             'flame': import_folder('graphics/particles/flame/frames'),
             'aura': import_folder('graphics/particles/aura'),
             'heal': import_folder('graphics/particles/heal/frames'),
+            'arrow_up': import_folder('graphics/particles/arrow/frames_up'),
+            'arrow_down': import_folder('graphics/particles/arrow/frames_down'),
+            'arrow_left': import_folder('graphics/particles/arrow/frames_left'),
+            'arrow_right': import_folder('graphics/particles/arrow/frames_right'),
 
             # attacks
             'claw': import_folder('graphics/particles/claw'),
