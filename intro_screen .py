@@ -54,6 +54,7 @@ def input_box(width,height,x,y, image = "none"):
         input_rectangle = pygame. Surface((width,height)) 
         input_rectangle.set_alpha(100)
         input_rectangle.fill((255,255,255)) 
+
         return screenblit(input_rectangle,x,y)
     else:
         return screenblit(image,x,y)

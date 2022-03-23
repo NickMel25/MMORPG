@@ -36,6 +36,7 @@ def send(msg):
     global server_port
     udp_client.sendto(str.encode(msg),(server_IP,server_port))
 
+
 def proccess(data):    
     send(data)
     ans = receive()
@@ -46,3 +47,4 @@ def start_thread(player,level):
     #  "level" : level}
     players_nearby_thread = Thread(target=recv_thread_handler, daemon=True, args=(player,level))
     players_nearby_thread.start()
+

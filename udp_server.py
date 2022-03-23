@@ -1,5 +1,3 @@
-from cgi import print_form
-from http import client
 from math import floor
 import socket
 
@@ -78,6 +76,7 @@ def main():
         nearby = proximity(data[0].decode().split(":")[0])
         nearby = make_string(nearby)
         iterate_users(nearby,data)
+
 
 if __name__ == "__main__":
     main()
