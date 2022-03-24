@@ -3,7 +3,7 @@ from player import Player
 from settings import *
 from level import Level
 import udp_client
-
+from chat_rect import Chat
 
 game = ''
 
@@ -25,7 +25,7 @@ class Game:
         global game
         global player
         udp_client.start_thread(player,self.level)
-        
+        chat_rect = Chat()
         while True:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
@@ -45,11 +45,12 @@ class Game:
                         if 660 <= mouse[0] <= 740 and 385 <= mouse[1] <= 415:
                             pygame.quit()
                             sys.exit()
-
+                        
 
 
             self.screen.fill(WATER_COLOR)
             self.level.run()
+            chat_rect.display()
             pygame.display.update()
             self.clock.tick(FPS)
             ans = player.to_string()
@@ -60,7 +61,6 @@ class Game:
 
 def main():
     global game
-    global player_stats
     
     game = Game()
     # player_stats = player.to_string() 

@@ -1,3 +1,4 @@
+import imp
 import time
 import pygame
 from settings import *
@@ -12,6 +13,7 @@ from enemy import Enemy
 from particles import AnimationPlayer
 from magic import MagicPlayer
 from upgrade import Upgrade
+import intro_screen 
 # import globals
 
 class Level:
@@ -66,7 +68,8 @@ class Level:
             'objects': import_folder('graphics/objects')
         }
 
-        username = input("please enter username")
+        # username = input("please input your username\n")
+        username = intro_screen.main()
 
         for style, layout in layouts.items():
             for row_index, row in enumerate(layout):

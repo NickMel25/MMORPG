@@ -1,11 +1,12 @@
 from queue import Empty
 import pygame
+import boxes
 
 pygame.init()
 screen = pygame.display.set_mode((1460,920))
 base_font = pygame.font.Font(None, 45)
 
-# input_bar = pygame.image.load(r'Images/Intro_Images/inputbar.jpeg').convert()
+
 Login_img= pygame.image.load(r'Images/Intro_Images/Login.png').convert()
 intro_img= pygame.image.load(r'Images/Intro_Images/374088.jpg').convert()
 input_bar =  pygame.Surface((545,68))
@@ -13,6 +14,14 @@ input_bar =  pygame.Surface((545,68))
 login_x = (screen.get_width()-Login_img.get_width())/2
 login_y = (screen.get_height()-Login_img.get_height())/2
 username_text = ''
+
+def screenblit(rectangle,x,y):
+    if str(type(rectangle)) == "<class 'pygame.Surface'>": 
+        return screen.blit(rectangle, (x,y))
+    else:
+        surface = pygame.Surface((rectangle.w,rectangle.h))
+        surface.fill((202,202,202))
+        return screen.blit(surface,(x,y))
 password_text = ''
 
 # ------------------------------------------------------------------------
@@ -36,12 +45,12 @@ def display_screen():
     screen.blit(Login_img,(login_x,login_y))
     pygame.display.flip() 
     input_list = {  
-    "switchlogin" : input_box(191,41,login_x+10,login_y+10),
-    "switchregister" : input_box(191,41,login_x+299,login_y+10),
-    "username" : input_box(421,35,login_x+40,login_y+143),
-    "password" : input_box(421,35,login_x+40,login_y+286),
-    "cancel" : input_box(191,41,login_x+10,login_y+450),
-    "apply" : input_box(191,41,login_x+299,login_y+450),
+    "switchlogin" : boxes.input_box(191,41,login_x+10,login_y+10,screen),
+    "switchregister" : boxes.input_box(191,41,login_x+299,login_y+10,screen),
+    "username" : boxes.input_box(421,35,login_x+40,login_y+143,screen),
+    "password" : boxes.input_box(421,35,login_x+40,login_y+286,screen),
+    "cancel" : boxes.input_box(191,41,login_x+10,login_y+450,screen),
+    "apply" : boxes.input_box(191,41,login_x+299,login_y+450,screen),
     } 
     pygame.display.flip()
 
@@ -49,30 +58,30 @@ def display_screen():
 
 # ------------------------------------------------------------------------
     
-def input_box(width,height,x,y, image = "none"):
-    if image == "none":
-        input_rectangle = pygame. Surface((width,height)) 
-        input_rectangle.set_alpha(100)
-        input_rectangle.fill((255,255,255)) 
+# def input_box(width,height,x,y, image = "none"):
+#     if image == "none":
+#         input_rectangle = pygame. Surface((width,height)) 
+#         input_rectangle.set_alpha(100)
+#         input_rectangle.fill((255,255,255)) 
 
-        return screenblit(input_rectangle,x,y)
-    else:
-        return screenblit(image,x,y)
+#         return boxes.screenblit(input_rectangle,x,y)
+#     else:
+#         return boxes.screenblit(image,x,y)
 
-# ------------------------------------------------------------------------
+# # ------------------------------------------------------------------------
 
-def screenblit(rectangle,x,y):
-    if str(type(rectangle)) == "<class 'pygame.Surface'>": 
-        return screen.blit(rectangle, (x,y))
-    else:
-        surface = pygame.Surface((rectangle.w,rectangle.h))
-        surface.fill((202,202,202))
-        return screen.blit(surface,(x,y))
+# def screenblit(rectangle,x,y):
+#     if str(type(rectangle)) == "<class 'pygame.Surface'>": 
+#         return screen.blit(rectangle, (x,y))
+#     else:
+#         surface = pygame.Surface((rectangle.w,rectangle.h))
+#         surface.fill((202,202,202))
+#         return screen.blit(surface,(x,y))
 
-# ------------------------------------------------------------------------
+# # ------------------------------------------------------------------------
 
-def collides(input_rect, event):
-    return event.type == pygame.MOUSEBUTTONDOWN and event.button == 1 and input_rect.collidepoint(event.pos)
+# def collides(input_rect, event):
+#     return event.type == pygame.MOUSEBUTTONDOWN and event.button == 1 and input_rect.collidepoint(event.pos)
 
 # ------------------------------------------------------------------------
 
@@ -87,7 +96,7 @@ def key_input(input_rect,rect_name):
         for event in pygame.event.get():
             exit(event)
             if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
-                if not collides(input_rect,event):
+                if not boxes.collides(input_rect,event):
                     return event
             
             elif event.type == pygame.KEYDOWN:
@@ -108,8 +117,8 @@ def key_input(input_rect,rect_name):
                 
                 
                 if text_surface.get_width() < input_rect.w:
-                    screenblit(input_rect,input_rect.x,input_rect.y)
-                    screenblit(text_surface,input_rect.x,input_rect.y+3)
+                    boxes.screenblit(input_rect,(input_rect.x,input_rect.y),screen,255,(202,202,202))
+                    boxes.screenblit(text_surface,(input_rect.x,input_rect.y+3),screen,255,(202,202,202))
                 
                     if rect_name == "username":
                         username_text = text
@@ -137,16 +146,16 @@ def main():
             if pending != Empty:
                 event = pending
             for rect in rect_list:
-                if collides(rect_list[rect], event):
+                if boxes.collides(rect_list[rect], event):
                     if rect == "username" or rect == "password":
                         pending = key_input(rect_list[rect],rect)
                         continue
                     elif rect == "apply":
                         print("we need to connect this to the game")
-                        pending = Empty
+                        return username_text
                     pending = Empty
 
 # ------------------------------------------------------------------------
 
-if __name__ == '__main__':
-    main()
+# if __name__ == '__main__':
+#     main()
