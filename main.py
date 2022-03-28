@@ -7,8 +7,10 @@ import udp_client
 
 game = ''
 
+
 class Game:
     player = ''
+
     def __init__(self):
         # general setup
         global player 
@@ -20,11 +22,10 @@ class Game:
         self.level = Level()
         player = self.level.return_player()
 
-
     def run(self):
         global game
         global player
-        udp_client.start_thread(player,self.level)
+        udp_client.start_thread(player, self.level)
         
         while True:
             for event in pygame.event.get():
@@ -46,8 +47,6 @@ class Game:
                             pygame.quit()
                             sys.exit()
 
-
-
             self.screen.fill(WATER_COLOR)
             self.level.run()
             pygame.display.update()
@@ -56,8 +55,6 @@ class Game:
             udp_client.send(ans)
 
 
-           
-
 def main():
     global game
     global player_stats
@@ -65,6 +62,7 @@ def main():
     game = Game()
     # player_stats = player.to_string() 
     game.run()
+
 
 if __name__ == '__main__':
     main()

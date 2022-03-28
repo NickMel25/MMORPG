@@ -1,5 +1,7 @@
 import time
 import pygame
+
+import player
 from settings import *
 from tile import Tile
 from player import Player
@@ -13,6 +15,8 @@ from particles import AnimationPlayer
 from magic import MagicPlayer
 from upgrade import Upgrade
 # import globals
+from player import num_water_potion, num_blood_potion, num_coin, num_bamboo
+
 
 class Level:
     def __init__(self):
@@ -50,6 +54,9 @@ class Level:
 
         # game over screen image
         self.gameover = pygame.image.load('graphics/test/gameover.png').convert_alpha()
+
+        # inventory image
+        self.inventory = pygame.image.load('graphics/test/inventory.png').convert_alpha()
     
     def return_player(self):
         return self.player
@@ -168,10 +175,42 @@ class Level:
 
         self.game_paused = not self.game_paused
 
+    # item drops
+    def add_water_potion_drop(self, inventory_rect):
+        font = pygame.font.SysFont(WATER_COLOR, UI_FONT_SIZE)
+        counter = font.render(str(player.num_water_potion), 1, TEXT_COLOR)
+        self.display_surface.blit(counter, (inventory_rect.x+9, inventory_rect.y+8))
+
+    def add_blood_potion_drop(self, inventory_rect):
+        font = pygame.font.SysFont(WATER_COLOR, UI_FONT_SIZE)
+        counter = font.render(str(player.num_blood_potion), 1, TEXT_COLOR)
+        self.display_surface.blit(counter, (inventory_rect.x+73, inventory_rect.y+8))
+
+    def add_coin_drop(self, inventory_rect):
+        font = pygame.font.SysFont(WATER_COLOR, UI_FONT_SIZE)
+        counter = font.render(str(player.num_coin), 1, TEXT_COLOR)
+        self.display_surface.blit(counter, (inventory_rect.x+137, inventory_rect.y+8))
+
+    def add_bamboo_drop(self, inventory_rect):
+        font = pygame.font.SysFont(WATER_COLOR, UI_FONT_SIZE)
+        counter = font.render(str(player.num_bamboo), 1, TEXT_COLOR)
+        self.display_surface.blit(counter, (inventory_rect.x+201, inventory_rect.y+8))
+
     def run(self):
         self.visible_sprites.custom_draw(self.player)
         self.ui.display(self.player)
 
+        # draw inventory
+        inventory_rect = pygame.Rect(0, 0, 1280, 1350)
+        inventory_surf = self.inventory
+        inventory_rect = inventory_surf.get_rect(center=inventory_rect.center)
+        self.display_surface.blit(inventory_surf, inventory_rect)
+
+        self.add_bamboo_drop(inventory_rect)
+        self.add_coin_drop(inventory_rect)
+        self.add_water_potion_drop(inventory_rect)
+        self.add_blood_potion_drop(inventory_rect)
+        pygame.display.update()
 
         if self.player.health <= 0:
             self.game_over = True
@@ -231,9 +270,8 @@ class YSortCameraGroup(pygame.sprite.Group):
             offset_pos = sprite.rect.topleft - self.offset
             self.display_surface.blit(sprite.image, offset_pos)
 
-        
     def players_draw(self,players):
-            pass
+        pass
 
     def enemy_update(self, player):
         enemy_sprites = [sprite for sprite in self.sprites() if

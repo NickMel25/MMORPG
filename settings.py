@@ -23,6 +23,7 @@ WATER_COLOR = '#71ddee'
 UI_BG_COLOR = '#222222'
 UI_BORDER_COLOR = '#111111'
 TEXT_COLOR = '#EEEEEE'
+WHITE = 'ffffff'
 
 # ui colors
 HEALTH_COLOR = 'red'
