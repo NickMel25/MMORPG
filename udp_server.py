@@ -1,9 +1,10 @@
 from math import floor
 import socket
-
+import threading
+import chat_server
 
 ip = '0.0.0.0'
-port = 13372
+port = 10001
 udp_server = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 udp_server.bind((ip,port))
 client_list = {}
@@ -69,7 +70,11 @@ def receive():
 
 
 def main():
+    thread = threading.Thread(target=chat_server.main)
+    thread.daemon = True
+    thread.start()
     while True:
+
         data = receive()
         append(data)
         

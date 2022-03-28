@@ -59,7 +59,6 @@ class Level:
     def create_map(self):
         layouts = {
             'boundary': import_csv_layout('map/map_FloorBlocks.csv'),
-            'grass': import_csv_layout('map/map_Grass.csv'),
             'object': import_csv_layout('map/map_Objects.csv'),
             'entities': import_csv_layout('map/map_Entities.csv')
         }
@@ -67,8 +66,6 @@ class Level:
             'grass': import_folder('graphics/grass'),
             'objects': import_folder('graphics/objects')
         }
-
-        # username = input("please input your username\n")
         username = intro_screen.main()
 
         for style, layout in layouts.items():
@@ -79,14 +76,6 @@ class Level:
                         y = row_index * TILESIZE
                         if style == 'boundary':
                             Tile((x, y), [self.obstacle_sprites], 'invisible')
-                        if style == 'grass':
-                            print(graphics['grass'])
-                            random_grass_image = choice(graphics['grass'])
-                            Tile(
-                                (x, y),
-                                [self.visible_sprites, self.obstacle_sprites, self.attackable_sprites],
-                                'grass',
-                                random_grass_image)
 
                         if style == 'object':
                             surf = graphics['objects'][int(col)]
@@ -204,6 +193,8 @@ class Level:
             self.visible_sprites.enemy_update(self.player)
             self.player_attack_logic()
 
+    def restart_location(self):
+        self.player = ''
 
 class YSortCameraGroup(pygame.sprite.Group):
     def __init__(self):

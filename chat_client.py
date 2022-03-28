@@ -2,16 +2,14 @@ import socket
 import threading
 import time
 
-ip = '192.168.186.198'
+ip = '10.0.0.169'
 
-port = 10001
+port = 13372
 server_address = (ip,port)
 chat_client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 chat_client.connect(server_address)
 username = 'Ben'
 
-# def __init__(self):
-#     global chat_client
 
 def input_thread_handler():
     global chat_client

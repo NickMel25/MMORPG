@@ -13,7 +13,8 @@ input_bar =  pygame.Surface((545,68))
 
 login_x = (screen.get_width()-Login_img.get_width())/2
 login_y = (screen.get_height()-Login_img.get_height())/2
-username_text = ''
+username_text = ['',]
+password_text = ['',]
 
 def screenblit(rectangle,x,y):
     if str(type(rectangle)) == "<class 'pygame.Surface'>": 
@@ -22,7 +23,7 @@ def screenblit(rectangle,x,y):
         surface = pygame.Surface((rectangle.w,rectangle.h))
         surface.fill((202,202,202))
         return screen.blit(surface,(x,y))
-password_text = ''
+
 
 # ------------------------------------------------------------------------
 
@@ -56,42 +57,14 @@ def display_screen():
 
     return input_list
 
-# ------------------------------------------------------------------------
-    
-# def input_box(width,height,x,y, image = "none"):
-#     if image == "none":
-#         input_rectangle = pygame. Surface((width,height)) 
-#         input_rectangle.set_alpha(100)
-#         input_rectangle.fill((255,255,255)) 
-
-#         return boxes.screenblit(input_rectangle,x,y)
-#     else:
-#         return boxes.screenblit(image,x,y)
-
-# # ------------------------------------------------------------------------
-
-# def screenblit(rectangle,x,y):
-#     if str(type(rectangle)) == "<class 'pygame.Surface'>": 
-#         return screen.blit(rectangle, (x,y))
-#     else:
-#         surface = pygame.Surface((rectangle.w,rectangle.h))
-#         surface.fill((202,202,202))
-#         return screen.blit(surface,(x,y))
-
-# # ------------------------------------------------------------------------
-
-# def collides(input_rect, event):
-#     return event.type == pygame.MOUSEBUTTONDOWN and event.button == 1 and input_rect.collidepoint(event.pos)
-
-# ------------------------------------------------------------------------
 
 def key_input(input_rect,rect_name):
     global username_text
     global password_text
     if rect_name == "username":
-        text = username_text
+        text = username_text[0]
     elif rect_name == "password":
-        text = password_text
+        text = password_text[0]
     while True:
         for event in pygame.event.get():
             exit(event)
@@ -121,41 +94,53 @@ def key_input(input_rect,rect_name):
                     boxes.screenblit(text_surface,(input_rect.x,input_rect.y+3),screen,255,(202,202,202))
                 
                     if rect_name == "username":
-                        username_text = text
+                        username_text[0] = text
                     elif rect_name == "password":
-                        password_text = text
+                        password_text[0] = text
                 
                     pygame.display.update()
                 
                 else:
                     text = text[:-1]
-
+                    return event
 
 # ------------------------------------------------------------------------
 
 def main():
-    
+    global username_text, password_text
     rect_list = display_screen()
     print(type(rect_list["switchlogin"]))
     print(type(rect_list["username"]))
     print(type(pygame.surface))
-    pending = Empty
+    pending = None
+    pass_text = ['',]
     while True:
         for event in pygame.event.get():
             exit(event)
-            if pending != Empty:
+            if pending != None:
                 event = pending
+                pending = None
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                print("lolusuck")
             for rect in rect_list:
                 if boxes.collides(rect_list[rect], event):
-                    if rect == "username" or rect == "password":
-                        pending = key_input(rect_list[rect],rect)
-                        continue
+                    if rect == "username":
+                        while not pending:
+                            pending = boxes.key_input(rect_list[rect],username_text)
+                            boxes.font_render(rect_list[rect],base_font,screen,username_text,(202,202,202))
+                            pygame.display.update()
+                    elif rect == "password":
+                        while not pending:
+                            pending = boxes.key_input(rect_list[rect],password_text)
+                            pass_text[0] = len(password_text[0])*'*'
+                            boxes.font_render(rect_list[rect],base_font,screen,pass_text,(202,202,202))
+                            password_text[0] = pass_text[0]
+                            pygame.display.update()
+
                     elif rect == "apply":
                         print("we need to connect this to the game")
-                        return username_text
-                    pending = Empty
+                        return username_text[0]
+                    else:
+                        pending = None
 
 # ------------------------------------------------------------------------
-
-# if __name__ == '__main__':
-#     main()

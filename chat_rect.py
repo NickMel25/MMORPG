@@ -1,30 +1,40 @@
+from time import sleep
 import pygame
 import chat_client
+import boxes
+import threading
+
+from level import Level
+
 class Chat:
 
-    def __init__(self):
+    def __init__(self,screen):
+        self.screen = screen
         self.display_surface = pygame.display.get_surface()
-        self.input_rect = self.input_box(10,520,225,20,(0,0,0))
-        self.chat_rect = self.input_box(10,290,225,225,(0,0,0))
+        self.input_rect = boxes.input_box(225,20,10,520,self.screen,(0,0,0),100)
+        self.chat_rect = boxes.input_box(225,225,10,290,self.screen,(0,0,0),100)
+        self.level = ''
+        self.font = pygame.font.Font(None, 20)
+        self.insert_text = ['',]
+        self.chat_log = []
+
 
     def display(self):
-        self.screenblit(self.input_rect,self.input_rect.topleft)
-        self.screenblit(self.chat_rect,self.chat_rect.topleft)
+        boxes.screenblit(self.input_rect,self.input_rect.topleft,self.screen,100,(0,0,0))
+        boxes.screenblit(self.chat_rect,self.chat_rect.topleft,self.screen,100,(0,0,0))
 
-    def input_box(self,x,y,width,height,color=(255,255,255),image = "none",):
-        if image == "none":
-            input_rectangle = pygame.Surface((width,height)) 
-            input_rectangle.set_alpha(100)
-            input_rectangle.fill(color) 
-            return self.screenblit(input_rectangle,(x,y))
-        else:
-            return self.screenblit(image,x,y)
+    def text_insert(self, event):
+        self.insert_text[0] += event.unicode
+        boxes.font_render(self.input_rect,self.font,self.screen,self.insert_text,(0,0,0),100)
+        self.level.player.chat_paused = False
 
-    def screenblit(self,rectangle,position):
-        if str(type(rectangle)) == "<class 'pygame.Surface'>": 
-            return self.display_surface.blit(rectangle, position )
-        else:
-            surface = pygame.Surface((rectangle.w,rectangle.h))
-            surface.fill((0,0,0))
-            surface.set_alpha(100)
-            return self.display_surface.blit(surface,position)
+
+    def thread_start(self,level):
+        self.level = level
+        thread = threading.Thread(target=self.text_insert)
+        thread.daemon = True
+        thread.start()
+    
+    def get_events(self,main_events):
+        self.events.append(main_events)
+

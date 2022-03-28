@@ -3,11 +3,11 @@ from threading import Thread
 import client_performer
 
 
-server_IP = '10.0.0.185'
+server_IP = '10.0.0.169'
 ip =socket.gethostbyname(socket.gethostname())
 
 port = 12345
-server_port = 13372
+server_port = 10001
 
 udp_client = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 udp_client.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
@@ -21,7 +21,7 @@ def recv_thread_handler(player,level):
         data = receive()
         data = data
         print(data)
-        location = client_performer.display_players(data,player,level)
+        client_performer.display_players(data,player,level)
 
 
 

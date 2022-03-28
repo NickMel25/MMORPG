@@ -1,10 +1,11 @@
+import imp
 import pygame, sys
 from player import Player
 from settings import *
 from level import Level
 import udp_client
 from chat_rect import Chat
-
+import boxes
 game = ''
 
 class Game:
@@ -20,31 +21,44 @@ class Game:
         self.level = Level()
         player = self.level.return_player()
 
-
     def run(self):
         global game
         global player
         udp_client.start_thread(player,self.level)
-        chat_rect = Chat()
+        chat_rect = Chat(self.screen)
+        chat_rect.thread_start(self.level)
         while True:
+            
             for event in pygame.event.get():
+                if event == pygame.MOUSEBUTTONDOWN and boxes.collides(chat_rect.input_rect,event):
+                    player.chat_paused = True
+                if event == pygame.MOUSEBUTTONDOWN and not boxes.collides(chat_rect.input_rect,event):
+                    player.chat_paused = False
                 if event.type == pygame.QUIT:
                     pygame.quit()
                     sys.exit()
                 if event.type == pygame.KEYDOWN:
+                    chat_rect.text_insert(event)
                     if event.key == pygame.K_m:
                         self.level.toggle_menu()
+                    if event.key == pygame.K_RETURN:
+                        self.level.player.chat_paused = False
+                    
+
+
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     if self.level.game_over:
                         mouse = pygame.mouse.get_pos()
-                        # restart game button
-                        if 540 <= mouse[0] <= 620 and 385 <= mouse[1] <= 415:
-                            game = Game()
-                            game.run()
-                        # quit game button
-                        if 660 <= mouse[0] <= 740 and 385 <= mouse[1] <= 415:
-                            pygame.quit()
-                            sys.exit()
+                        # # restart game button
+                        # if 540 <= mouse[0] <= 620 and 385 <= mouse[1] <= 415:
+                        #     game = Game()
+                        #     game.run()
+                        # # quit game button
+                        # if 660 <= mouse[0] <= 740 and 385 <= mouse[1] <= 415:
+                            # pygame.quit()
+                            # sys.exit()
+        
+
                         
 
 

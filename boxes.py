@@ -1,5 +1,7 @@
 import pygame
-from queue import Empty
+pygame.init()
+
+
 
 def input_box(width,height,x,y,screen,color=(255,255,255),alpha=0,image = "none",):
     if image == "none":
@@ -10,6 +12,8 @@ def input_box(width,height,x,y,screen,color=(255,255,255),alpha=0,image = "none"
     else:
         return screenblit(image,(x,y),screen,alpha)
 
+
+
 def screenblit(rectangle,position,screen,alpha, color):
     if str(type(rectangle)) == "<class 'pygame.Surface'>": 
         return screen.blit(rectangle, position)
@@ -18,21 +22,22 @@ def screenblit(rectangle,position,screen,alpha, color):
         surface.fill(color)
         surface.set_alpha(alpha)
         return screen.blit(surface,position)
-        
+
+
+
 def exit(event):
     if event.type == pygame.QUIT:
         pygame.quit()
 
 
+
 def collides(input_rect, event):
     return event.type == pygame.MOUSEBUTTONDOWN and event.button == 1 and input_rect.collidepoint(event.pos)
 
-def key_input(input_rect,rect_name):
-    if rect_name == "username":
-        text = username_text
-    elif rect_name == "password":
-        text = password_text
-    while True:
+
+
+def key_input(input_rect,text,):
+    while True: 
         for event in pygame.event.get():
             exit(event)
             if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
@@ -42,30 +47,25 @@ def key_input(input_rect,rect_name):
             elif event.type == pygame.KEYDOWN:
                 
                 if event.key == pygame.K_RETURN:
-                    return Empty
+                    return event
                 elif event.key == pygame.K_BACKSPACE:
-                    text = text[:-1]
+                    text[0] = text[0][:-1]
+                    return
                 else:
-                    text += event.unicode
+                    text[0] += event.unicode
+                    return
+            
+                    
 
-                if rect_name == "password":
-                    pass_text = len(text)*'*'
-                else:
-                    pass_text = text
-                text_surface = base_font.render(pass_text, True, (255, 255, 255))
+def font_render(input_rect,font,screen,text,color=(255,255,255),alpha=255):
+                
+ 
+                text_surface = font.render(text[0], True, (255,255,255))
                 print(text_surface.get_width())
                 
                 
                 if text_surface.get_width() < input_rect.w:
-                    boxes.screenblit(input_rect,(input_rect.x,input_rect.y),screen,255,(202,202,202))
-                    boxes.screenblit(text_surface,(input_rect.x,input_rect.y+3),screen,255,(202,202,202))
-                
-                    if rect_name == "username":
-                        username_text = text
-                    elif rect_name == "password":
-                        password_text = text
-                
-                    pygame.display.update()
-                
+                    screenblit(input_rect,(input_rect.x,input_rect.y),screen,alpha,color)
+                    screenblit(text_surface,(input_rect.x,input_rect.y+3),screen,255,color)               
                 else:
-                    text = text[:-1]
+                    text[0] = text[0][:-1]
