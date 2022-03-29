@@ -2,6 +2,7 @@ from glob import glob
 import socket
 from datetime import datetime
 import threading
+from time import sleep
 
 ip = '0.0.0.0'
 
@@ -39,6 +40,7 @@ def thread_handler(conn):
         for client in conn_list:
             # if not(username in conn_list):
             conn_list[client].sendall(str.encode(ans))
+        sleep(10)
 
 def main():
     global chat_server

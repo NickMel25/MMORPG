@@ -36,7 +36,7 @@ def collides(input_rect, event):
 
 
 
-def key_input(input_rect,text,):
+def key_input(input_rect,text):
     while True: 
         for event in pygame.event.get():
             exit(event)
@@ -66,6 +66,7 @@ def font_render(input_rect,font,screen,text,color=(255,255,255),alpha=255):
                 
                 if text_surface.get_width() < input_rect.w:
                     screenblit(input_rect,(input_rect.x,input_rect.y),screen,alpha,color)
-                    screenblit(text_surface,(input_rect.x,input_rect.y+3),screen,255,color)               
+                    screenblit(text_surface,(input_rect.x,input_rect.y+3),screen,255,color)
+                    # pygame.display.update()               
                 else:
                     text[0] = text[0][:-1]

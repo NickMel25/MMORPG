@@ -25,24 +25,36 @@ class Game:
         global game
         global player
         udp_client.start_thread(player,self.level)
-        chat_rect = Chat(self.screen)
+        chat_rect = Chat(self.screen,player.username)
         chat_rect.thread_start(self.level)
         while True:
             
             for event in pygame.event.get():
-                if event == pygame.MOUSEBUTTONDOWN and boxes.collides(chat_rect.input_rect,event):
+                if event.type == pygame.MOUSEBUTTONDOWN and boxes.collides(chat_rect.input_rect,event):
                     player.chat_paused = True
-                if event == pygame.MOUSEBUTTONDOWN and not boxes.collides(chat_rect.input_rect,event):
+                if event.type == pygame.MOUSEBUTTONDOWN and not boxes.collides(chat_rect.input_rect,event):
                     player.chat_paused = False
                 if event.type == pygame.QUIT:
                     pygame.quit()
                     sys.exit()
                 if event.type == pygame.KEYDOWN:
-                    chat_rect.text_insert(event)
-                    if event.key == pygame.K_m:
-                        self.level.toggle_menu()
-                    if event.key == pygame.K_RETURN:
-                        self.level.player.chat_paused = False
+                    if player.chat_paused == True:
+                        if player.chat_paused == True and event.key == pygame.K_BACKSPACE:
+                            chat_rect.insert_text[0] = chat_rect.insert_text[0][:-1]
+
+                        elif player.chat_paused == True and event.key == pygame.K_RETURN:
+                            player.chat_paused = False
+                            chat_rect.send_text(chat_rect.insert_text)
+
+                        elif not (event.type == pygame.K_DOWN and event.type == pygame.K_UP and event.type == pygame.K_LEFT and event.type == pygame.K_RIGHT) and player.chat_paused == True:
+                            chat_rect.insert_text[0] += event.unicode
+
+
+                    elif event.key == pygame.K_m:
+                            self.level.toggle_menu()
+
+
+                    
                     
 
 
@@ -61,10 +73,11 @@ class Game:
 
                         
 
-
+            
             self.screen.fill(WATER_COLOR)
             self.level.run()
             chat_rect.display()
+            boxes.font_render(chat_rect.input_rect,chat_rect.font,self.screen,chat_rect.insert_text,(0,0,0),100)
             pygame.display.update()
             self.clock.tick(FPS)
             ans = player.to_string()
