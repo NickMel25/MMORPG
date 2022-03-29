@@ -12,8 +12,6 @@ client_time = {}
 print(ip)
 
 
-
-
 def proximity(username):
     in_proximity = {}
     print(client_list[username]["location"])

@@ -8,8 +8,10 @@ from chat_rect import Chat
 import boxes
 game = ''
 
+
 class Game:
     player = ''
+
     def __init__(self):
         # general setup
         global player 
@@ -24,9 +26,11 @@ class Game:
     def run(self):
         global game
         global player
+
         udp_client.start_thread(player,self.level)
         chat_rect = Chat(self.screen,player.username)
         chat_rect.thread_start(self.level)
+
         while True:
             
             for event in pygame.event.get():
@@ -61,6 +65,7 @@ class Game:
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     if self.level.game_over:
                         mouse = pygame.mouse.get_pos()
+
                         # # restart game button
                         # if 540 <= mouse[0] <= 620 and 385 <= mouse[1] <= 415:
                         #     game = Game()
@@ -73,7 +78,7 @@ class Game:
 
                         
 
-            
+
             self.screen.fill(WATER_COLOR)
             self.level.run()
             chat_rect.display()
@@ -84,14 +89,13 @@ class Game:
             udp_client.send(ans)
 
 
-           
-
 def main():
     global game
     
     game = Game()
     # player_stats = player.to_string() 
     game.run()
+
 
 if __name__ == '__main__':
     main()

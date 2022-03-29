@@ -3,14 +3,24 @@ from settings import *
 from support import import_folder
 from entity import Entity
 
+# items
+num_water_potion = 0
+num_blood_potion = 0
+num_coin = 0
+num_bamboo = 0
+
+
 class Player(Entity):
-    def __init__(self, pos, groups, obstacle_sprites, create_attack, destroy_attack, create_magic,username):
+    def __init__(self, pos, groups, obstacle_sprites, create_attack, destroy_attack, create_magic, username):
         super().__init__(groups)
         self.image = pygame.image.load('graphics/test/player.png').convert_alpha()
         self.rect = self.image.get_rect(topleft=pos)
         self.hitbox = self.rect.inflate(-6, HITBOX_OFFSET['player'])
 
+
         self.chat_paused = False
+        self.display_surface = pygame.display.get_surface()
+
         self.username = username
         # graphics setup
         self.import_player_assets()

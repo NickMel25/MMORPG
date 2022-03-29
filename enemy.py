@@ -1,8 +1,11 @@
 import pygame
 import entity
+import player
 from settings import *
 from entity import Entity
 from support import *
+import random
+from player import num_water_potion, num_blood_potion, num_coin, num_bamboo
 
 
 class Enemy(Entity):
@@ -47,14 +50,6 @@ class Enemy(Entity):
         self.hit_time = None
         self.invincibility_duration = 300
 
-        # sounds
-        self.death_sound = pygame.mixer.Sound('audio/death.wav')
-        self.hit_sound = pygame.mixer.Sound('audio/hit.wav')
-        self.attack_sound = pygame.mixer.Sound(monster_info['attack_sound'])
-        self.death_sound.set_volume(0.6)
-        self.hit_sound.set_volume(0.6)
-        self.attack_sound.set_volume(0.6)
-
     def import_graphics(self, name):
         self.animations = {'idle': [], 'move': [], 'attack': []}
         main_path = f'graphics/monsters/{name}/'
@@ -89,7 +84,6 @@ class Enemy(Entity):
         if self.status == 'attack':
             self.attack_time = pygame.time.get_ticks()
             self.damage_player(self.attack_damage, self.attack_type)
-            self.attack_sound.play()
         elif self.status == 'move':
             self.direction = self.get_player_distance_direction(player)[1]
         else:
@@ -116,7 +110,10 @@ class Enemy(Entity):
     def cooldowns(self):
         current_time = pygame.time.get_ticks()
         if not self.can_attack:
-            if current_time - self.attack_time >= self.attack_cooldown:
+            if self.monster_name == 'spirit':
+                if current_time - self.attack_time >= self.attack_cooldown + 200:
+                    self.can_attack = True
+            elif current_time - self.attack_time >= self.attack_cooldown:
                 self.can_attack = True
 
         if not self.vulnerable:
@@ -125,7 +122,6 @@ class Enemy(Entity):
 
     def get_damage(self, player, attack_type):
         if self.vulnerable:
-            self.hit_sound.play()
             self.direction = self.get_player_distance_direction(player)[1]
             if attack_type == 'weapon':
                 self.health -= player.get_full_weapon_damage()
@@ -139,7 +135,25 @@ class Enemy(Entity):
             self.kill()
             self.trigger_death_particles(self.rect.center, self.monster_name)
             self.add_exp(self.exp)
-            self.death_sound.play()
+            random_number = random.randint(1, 4)
+            if random_number == 1:
+                player.num_coin += 1
+            elif random_number == 2:
+                player.num_water_potion += 1
+            elif random_number == 3:
+                player.num_blood_potion += 1
+            else:
+                player.num_bamboo += 1
+
+            random_number = random.randint(1, 4)
+            if random_number == 1:
+                player.num_coin += 1
+            elif random_number == 2:
+                player.num_water_potion += 1
+            elif random_number == 3:
+                player.num_blood_potion += 1
+            else:
+                player.num_bamboo += 1
 
     def hit_reaction(self):
         if not self.vulnerable:
