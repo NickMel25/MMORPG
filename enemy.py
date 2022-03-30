@@ -5,7 +5,6 @@ from settings import *
 from entity import Entity
 from support import *
 import random
-from player import num_water_potion, num_blood_potion, num_coin, num_bamboo
 
 
 class Enemy(Entity):
@@ -135,24 +134,36 @@ class Enemy(Entity):
             self.kill()
             self.trigger_death_particles(self.rect.center, self.monster_name)
             self.add_exp(self.exp)
-            random_number = random.randint(1, 4)
+            random_number = random.randint(1, 10)
             if random_number == 1:
                 player.num_coin += 1
             elif random_number == 2:
-                player.num_water_potion += 1
+                player.num_coin += 1
             elif random_number == 3:
+                player.num_water_potion += 1
+            elif random_number == 4:
+                player.num_water_potion += 1
+            elif random_number == 5:
                 player.num_blood_potion += 1
-            else:
+            elif random_number == 6:
+                player.num_bamboo += 1
+            elif random_number == 7:
                 player.num_bamboo += 1
 
-            random_number = random.randint(1, 4)
+            random_number = random.randint(1, 10)
             if random_number == 1:
                 player.num_coin += 1
             elif random_number == 2:
-                player.num_water_potion += 1
+                player.num_coin += 1
             elif random_number == 3:
+                player.num_water_potion += 1
+            elif random_number == 4:
+                player.num_water_potion += 1
+            elif random_number == 5:
                 player.num_blood_potion += 1
-            else:
+            elif random_number == 6:
+                player.num_bamboo += 1
+            elif random_number == 7:
                 player.num_bamboo += 1
 
     def hit_reaction(self):

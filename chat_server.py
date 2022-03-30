@@ -2,14 +2,16 @@ from glob import glob
 import socket
 from datetime import datetime
 import threading
+from time import sleep
 
 ip = '0.0.0.0'
-port = 10001
+
+
+port = 13372
 conn_list = {}
 server_address = (ip,port)
 chat_server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 chat_server.bind(server_address)
- 
 
 def connecting():
     global chat_server
@@ -38,10 +40,13 @@ def thread_handler(conn):
         for client in conn_list:
             # if not(username in conn_list):
             conn_list[client].sendall(str.encode(ans))
+        sleep(10)
 
 def main():
     global chat_server
+
     print("connecting")
+
     while True:
         conn = connecting()
         thread = threading.Thread(target=thread_handler,args=[conn])

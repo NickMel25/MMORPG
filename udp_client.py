@@ -3,11 +3,11 @@ from threading import Thread
 import client_performer
 
 
-server_IP = '172.20.10.2'
+server_IP = '192.168.173.87'
 ip =socket.gethostbyname(socket.gethostname())
 
 port = 12345
-server_port = 13372
+server_port = 10001
 
 udp_client = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 udp_client.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
@@ -19,7 +19,7 @@ def recv_thread_handler(player, level):
         data = receive()
         data = data
         print(data)
-        location = client_performer.display_players(data,player,level)
+        client_performer.display_players(data,player,level)
 
 
 def receive():
@@ -46,3 +46,4 @@ def start_thread(player,level):
     #  "level" : level}
     players_nearby_thread = Thread(target=recv_thread_handler, daemon=True, args=(player,level))
     players_nearby_thread.start()
+

@@ -1,38 +1,35 @@
 import socket
 import threading
 import time
-ip = socket.gethostbyname(socket.gethostname())
-port = 10001
+
+ip = '192.168.173.87'
+
+port = 13372
 server_address = (ip,port)
 chat_client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 chat_client.connect(server_address)
 username = 'Ben'
+text = ''
 
-# def __init__(self):
-#     global chat_client
-
-def input_thread_handler():
+def send_message(msg):
     global chat_client
-    while True:
-        msg = input(f"{username}: ")
-        chat_client.sendall(str.encode(msg))
-        time.sleep(0.2)
+    chat_client.sendall(str.encode(msg))
+        
+
+def init(user):
+    global username
+    username = user
+    chat_client.sendall(str.encode(username))
 
 
 def main():
     global chat_client
-    global username
-    username = input("enter your username:")
-    chat_client.send(str.encode(username))
-    thread = threading.Thread(target=input_thread_handler)
-    thread.daemon = True
-    thread.start()
-    while True:
-        data = chat_client.recv(1024)
-        if not data:
-            break
-        print(data.decode())
+    data = chat_client.recv(1024)
+    print(data)
+    if not data:
+        return None
+    return data.decode()
         
 
 if __name__ == '__main__':
-    main()
+    main(username)
