@@ -29,6 +29,7 @@ class Game:
         udp_client.start_thread(player,self.level)
         chat_rect = Chat(self.screen,player.username)
         chat_rect.thread_start(self.level)
+
         while True:
             
             for event in pygame.event.get():
@@ -57,6 +58,7 @@ class Game:
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     if self.level.game_over:
                         mouse = pygame.mouse.get_pos()
+
 # <<<<<<< HEAD
 #                         # restart game button
 #                         if 540 <= mouse[0] <= 620 and 385 <= mouse[1] <= 415:
@@ -68,6 +70,8 @@ class Game:
 #                             sys.exit()
 #
 # =======
+
+
                         # # restart game button
                         # if 540 <= mouse[0] <= 620 and 385 <= mouse[1] <= 415:
                         #     game = Game()
@@ -80,8 +84,10 @@ class Game:
 
                         
 
+
             
 # >>>>>>> origin/bens_branch
+
             self.screen.fill(WATER_COLOR)
             self.level.run()
             chat_rect.display()

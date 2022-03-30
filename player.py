@@ -17,9 +17,11 @@ class Player(Entity):
         self.rect = self.image.get_rect(topleft=pos)
         self.hitbox = self.rect.inflate(-6, HITBOX_OFFSET['player'])
 
+
         self.display_surface = pygame.display.get_surface()
 
         self.chat_paused = False
+
         self.username = username
         # graphics setup
         self.import_player_assets()
