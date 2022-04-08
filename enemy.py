@@ -6,6 +6,9 @@ from entity import Entity
 from support import *
 import random
 
+from player import num_water_potion, num_blood_potion, num_coin, num_bamboo
+
+
 
 class Enemy(Entity):
     def __init__(self, monster_name, pos, groups, obstacle_sprites, damage_player, trigger_death_particles, add_exp):

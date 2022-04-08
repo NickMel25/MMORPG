@@ -1,28 +1,29 @@
 from queue import Empty
+from settings import *
 import pygame
 import boxes
 
 pygame.init()
-screen = pygame.display.set_mode((1460,920))
+screen = pygame.display.set_mode((WIDTH, HEIGTH))
 base_font = pygame.font.Font(None, 45)
 
-
-Login_img= pygame.image.load(r'Images/Intro_Images/Login.png').convert()
-intro_img= pygame.image.load(r'Images/Intro_Images/374088.jpg').convert()
-input_bar =  pygame.Surface((545,68))
+Login_img = pygame.image.load(r'Images/Intro_Images/Login.png').convert()
+intro_img = pygame.image.load(r'Images/Intro_Images/374088.jpg').convert()
+input_bar = pygame.Surface((545, 68))
 
 login_x = (screen.get_width()-Login_img.get_width())/2
 login_y = (screen.get_height()-Login_img.get_height())/2
-username_text = ['',]
-password_text = ['',]
+username_text = ['', ]
+password_text = ['', ]
 
-def screenblit(rectangle,x,y):
+
+def screenblit(rectangle, x, y):
     if str(type(rectangle)) == "<class 'pygame.Surface'>": 
-        return screen.blit(rectangle, (x,y))
+        return screen.blit(rectangle, (x, y))
     else:
-        surface = pygame.Surface((rectangle.w,rectangle.h))
-        surface.fill((202,202,202))
-        return screen.blit(surface,(x,y))
+        surface = pygame.Surface((rectangle.w, rectangle.h))
+        surface.fill((202, 202, 202))
+        return screen.blit(surface, (x, y))
 
 
 # ------------------------------------------------------------------------

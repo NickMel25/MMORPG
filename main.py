@@ -1,10 +1,13 @@
 import pygame, sys
+import level
 from player import Player
 from settings import *
 from level import Level
 import udp_client
 from chat_rect import Chat
 import boxes
+import pathfinder
+
 game = ''
 
 
@@ -16,13 +19,15 @@ class Game:
         global player 
 
         pygame.init()
-        self.screen = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
+        self.screen = pygame.display.set_mode((WIDTH, HEIGTH))
         pygame.display.set_caption('MMO Game')
         self.clock = pygame.time.Clock()
         self.level = Level()
         player = self.level.return_player()
 
     def run(self):
+
+        pygame.mouse.set_visible(False)
         global game
         global player
 
@@ -37,6 +42,9 @@ class Game:
                     player.chat_paused = True
                 if event.type == pygame.MOUSEBUTTONDOWN and not boxes.collides(chat_rect.input_rect,event):
                     player.chat_paused = False
+
+                    level.Level.path_found(self.level)
+
                 if event.type == pygame.QUIT:
                     pygame.quit()
                     sys.exit()
@@ -59,34 +67,15 @@ class Game:
                     if self.level.game_over:
                         mouse = pygame.mouse.get_pos()
 
-# <<<<<<< HEAD
-#                         # restart game button
-#                         if 540 <= mouse[0] <= 620 and 385 <= mouse[1] <= 415:
-#                             game = Game()
-#                             game.run()
-#                         # quit game button
-#                         if 660 <= mouse[0] <= 740 and 385 <= mouse[1] <= 415:
-#                             pygame.quit()
-#                             sys.exit()
-#
-# =======
-
-
-                        # # restart game button
+                        # restart game button
                         # if 540 <= mouse[0] <= 620 and 385 <= mouse[1] <= 415:
                         #     game = Game()
                         #     game.run()
-                        # # quit game button
+
+                        # quit game button
                         if 660 <= mouse[0] <= 740 and 385 <= mouse[1] <= 415:
                             pygame.quit()
                             sys.exit()
-        
-
-                        
-
-
-            
-# >>>>>>> origin/bens_branch
 
             self.screen.fill(WATER_COLOR)
             self.level.run()

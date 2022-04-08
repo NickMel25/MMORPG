@@ -2,6 +2,7 @@ import pygame
 from settings import *
 from support import import_folder
 from entity import Entity
+from pathfinder import *
 
 # items
 num_water_potion = 0
@@ -11,17 +12,14 @@ num_bamboo = 0
 
 
 class Player(Entity):
-    def __init__(self, pos, groups, obstacle_sprites, create_attack, destroy_attack, create_magic, username):
+    def __init__(self, pos, empty_path, groups, obstacle_sprites, create_attack, destroy_attack, create_magic, username):
         super().__init__(groups)
         self.image = pygame.image.load('graphics/test/player.png').convert_alpha()
         self.rect = self.image.get_rect(topleft=pos)
         self.hitbox = self.rect.inflate(-6, HITBOX_OFFSET['player'])
 
-
-        self.display_surface = pygame.display.get_surface()
-
         self.chat_paused = False
-
+        self.display_surface = pygame.display.get_surface()
         self.username = username
         # graphics setup
         self.import_player_assets()
@@ -32,6 +30,11 @@ class Player(Entity):
         self.attack_cooldown = 400
         self.attack_time = None
         self.obstacle_sprites = obstacle_sprites
+
+        self.path = []
+        self.collision_rects = []
+        self.empty_path = empty_path
+        self.pos = self.hitbox.center
 
         # weapon
         self.create_attack = create_attack
@@ -73,29 +76,66 @@ class Player(Entity):
             full_path = character_path + animation
             self.animations[animation] = import_folder(full_path)
 
+    def set_path(self, path):
+        self.path = path
+        self.create_collision_rects()
+        self.get_direction()
+
+    def create_collision_rects(self):
+        if self.path:
+            self.collision_rects = []
+            for point in self.path:
+                x = (point[0] * 64) + 32
+                y = (point[1] * 64) + 32
+                rect = pygame.Rect((x - 32, y - 32), (64, 64))
+                self.collision_rects.append(rect)
+
+    def get_direction(self):
+        if self.collision_rects:
+            start = pygame.math.Vector2(self.pos)
+            end = pygame.math.Vector2(self.collision_rects[0].center)
+            self.direction = (end - start).normalize()
+            self.direction.y = round(self.direction.y)
+            self.direction.x = round(self.direction.x)
+            if self.direction.y == -1:
+                self.status = 'up'
+            elif self.direction.y == 1:
+                self.status = 'down'
+            else:
+                self.direction.y = 0
+
+            if self.direction.x == 1:
+                self.status = 'right'
+            elif self.direction.x == -1:
+                self.status = 'left'
+            else:
+                self.direction.x = 0
+
+        else:
+            self.direction = pygame.math.Vector2(0, 0)
+            self.path = []
+
+    def check_collisions(self):
+        if self.collision_rects:
+            for rect in self.collision_rects:
+                if rect.collidepoint(self.pos):
+                    del self.collision_rects[0]
+                    self.get_direction()
+        else:
+            self.path = []
+
+    def empty_path(self):
+        self.path = []
+
+    def update_position(self):
+        self.pos += self.direction * self.speed
+        self.check_collisions()
+        self.hitbox.center = self.pos
+
     def input(self):
         if not self.attacking:
             if not self.chat_paused:
                 keys = pygame.key.get_pressed()
-
-                # movement input
-                if keys[pygame.K_UP]:
-                    self.direction.y = -1
-                    self.status = 'up'
-                elif keys[pygame.K_DOWN]:
-                    self.direction.y = 1
-                    self.status = 'down'
-                else:
-                    self.direction.y = 0
-
-                if keys[pygame.K_RIGHT]:
-                    self.direction.x = 1
-                    self.status = 'right'
-                elif keys[pygame.K_LEFT]:
-                    self.direction.x = -1
-                    self.status = 'left'
-                else:
-                    self.direction.x = 0
 
                 # attack input
                 if keys[pygame.K_SPACE]:
@@ -224,8 +264,15 @@ class Player(Entity):
         self.input()
         self.cooldowns()
         self.get_status()
+
+# <<<<<<< HEAD
+#         self.animate()
+#         self.move(self.stats['speed'])
+# =======
+        self.update_position()
         self.animate()
-        self.move(self.stats['speed'])
+
+    #    self.move(self.stats['speed'])
         self.energy_recovery()
 
     def to_string(self):

@@ -6,7 +6,7 @@ def input_box(width,height,x,y,screen,color=(255,255,255),alpha=0,image = "none"
     if image == "none":
         input_rectangle = pygame.Surface((width,height)) 
         input_rectangle.set_alpha(alpha)
-        input_rectangle.fill(color) 
+        input_rectangle.fill(color)
         return screenblit(input_rectangle, (x, y), screen, alpha, color)
     else:
         return screenblit(image, (x, y), screen, alpha)
@@ -20,7 +20,6 @@ def screenblit(rectangle, position, screen, alpha, color):
         surface.fill(color)
         surface.set_alpha(alpha)
         return screen.blit(surface, position)
-
 
 def exit(event):
     if event.type == pygame.QUIT:

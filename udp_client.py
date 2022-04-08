@@ -2,8 +2,7 @@ import socket
 from threading import Thread
 import client_performer
 
-
-server_IP = '192.168.173.87'
+server_IP = '192.168.1.207'
 ip =socket.gethostbyname(socket.gethostname())
 
 port = 12345
@@ -14,7 +13,7 @@ udp_client.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 udp_client.bind((ip,port))
 
 
-def recv_thread_handler(player, level):
+def recv_thread_handler(player,level):
     while True:
         data = receive()
         data = data
@@ -23,7 +22,7 @@ def recv_thread_handler(player, level):
 
 
 def receive():
-        msg ,conn = udp_client.recvfrom(1024)
+        msg ,conn= udp_client.recvfrom(1024)
         msg = msg.decode()
         print(msg)
         return msg

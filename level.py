@@ -1,4 +1,3 @@
-import imp
 import time
 import pygame
 
@@ -15,14 +14,15 @@ from enemy import Enemy
 from particles import AnimationPlayer
 from magic import MagicPlayer
 from upgrade import Upgrade
-import intro_screen 
+import intro_screen
+from pathfinder import *
+
 # import globals
 from player import num_water_potion, num_blood_potion, num_coin, num_bamboo
 
 
 class Level:
     def __init__(self):
-
 
         self.player_sprites = pygame.sprite.Group()
 
@@ -33,6 +33,12 @@ class Level:
 
         image = pygame.image.load('graphics/player/down_idle/idle_down.png')
         pygame.display.update()
+
+        self.path = []
+        matrix = import_csv_layout('map/map_FloorBlocks.csv')
+        self.matrix = matrix
+        self.player = 0
+        self.pathfind = 0
 
         # sprite group setup
         self.visible_sprites = YSortCameraGroup()
@@ -59,7 +65,7 @@ class Level:
 
         # inventory image
         self.inventory = pygame.image.load('graphics/test/inventory.png').convert_alpha()
-    
+
     def return_player(self):
         return self.player
 
@@ -81,8 +87,9 @@ class Level:
                     if col != '-1':
                         x = col_index * TILESIZE
                         y = row_index * TILESIZE
-                        if style == 'boundary':
-                            Tile((x, y), [self.obstacle_sprites], 'invisible')
+
+                        # if style == 'boundary':
+                        # Tile((x, y), [self.obstacle_sprites], 'invisible')
 
                         if style == 'object':
                             surf = graphics['objects'][int(col)]
@@ -91,12 +98,12 @@ class Level:
                         if style == 'entities':
                             if col == '394':
                                 self.player = Player(
-                                    (x, y),
+                                    (x, y), self.path,
                                     [self.visible_sprites],
                                     self.obstacle_sprites,
                                     self.create_attack,
                                     self.destroy_attack,
-                                    self.create_magic,username)
+                                    self.create_magic, username)
                             else:
                                 if col == '390':
                                     monster_name = 'bamboo'
@@ -114,6 +121,8 @@ class Level:
                                     self.damage_player,
                                     self.trigger_death_particles,
                                     self.add_exp)
+
+        self.pathfind = Pathfinder(self.matrix, self.player)
 
     def create_attack(self):
         self.current_attack = Weapon(self.player, [self.visible_sprites, self.attack_sprites])
@@ -171,22 +180,22 @@ class Level:
     def add_water_potion_drop(self, inventory_rect):
         font = pygame.font.SysFont(WATER_COLOR, UI_FONT_SIZE)
         counter = font.render(str(player.num_water_potion), 1, TEXT_COLOR)
-        self.display_surface.blit(counter, (inventory_rect.x+9, inventory_rect.y+8))
+        self.display_surface.blit(counter, (inventory_rect.x + 9, inventory_rect.y + 8))
 
     def add_blood_potion_drop(self, inventory_rect):
         font = pygame.font.SysFont(WATER_COLOR, UI_FONT_SIZE)
         counter = font.render(str(player.num_blood_potion), 1, TEXT_COLOR)
-        self.display_surface.blit(counter, (inventory_rect.x+73, inventory_rect.y+8))
+        self.display_surface.blit(counter, (inventory_rect.x + 73, inventory_rect.y + 8))
 
     def add_coin_drop(self, inventory_rect):
         font = pygame.font.SysFont(WATER_COLOR, UI_FONT_SIZE)
         counter = font.render(str(player.num_coin), 1, TEXT_COLOR)
-        self.display_surface.blit(counter, (inventory_rect.x+137, inventory_rect.y+8))
+        self.display_surface.blit(counter, (inventory_rect.x + 137, inventory_rect.y + 8))
 
     def add_bamboo_drop(self, inventory_rect):
         font = pygame.font.SysFont(WATER_COLOR, UI_FONT_SIZE)
         counter = font.render(str(player.num_bamboo), 1, TEXT_COLOR)
-        self.display_surface.blit(counter, (inventory_rect.x+201, inventory_rect.y+8))
+        self.display_surface.blit(counter, (inventory_rect.x + 201, inventory_rect.y + 8))
 
     def use_water_potion(self):
         keys = pygame.key.get_pressed()
@@ -211,6 +220,7 @@ class Level:
 
     def run(self):
         self.visible_sprites.custom_draw(self.player)
+        self.pathfind.draw_active_cell()
         self.ui.display(self.player)
 
         # draw inventory
@@ -258,6 +268,11 @@ class Level:
     def restart_location(self):
         self.player = ''
 
+    def path_found(self):
+        self.pathfind.is_path_allowed()
+        if self.pathfind.path_allowed:
+            self.pathfind.create_path()
+
 
 class YSortCameraGroup(pygame.sprite.Group):
     def __init__(self):
@@ -288,7 +303,7 @@ class YSortCameraGroup(pygame.sprite.Group):
             offset_pos = sprite.rect.topleft - self.offset
             self.display_surface.blit(sprite.image, offset_pos)
 
-    def players_draw(self,players):
+    def players_draw(self, players):
         pass
 
     def enemy_update(self, player):
