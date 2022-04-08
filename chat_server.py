@@ -7,7 +7,7 @@ from time import sleep
 ip = '0.0.0.0'
 
 
-port = 13376
+port = 13378
 conn_list = {}
 server_address = (ip,port)
 chat_server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)

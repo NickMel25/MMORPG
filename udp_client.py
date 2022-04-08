@@ -3,7 +3,7 @@ from threading import Thread
 import client_performer
 
 
-server_IP = '192.168.175.65'
+server_IP = '192.168.68.113'
 ip =socket.gethostbyname(socket.gethostname())
 
 port = 12345

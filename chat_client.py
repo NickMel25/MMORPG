@@ -2,9 +2,9 @@ import socket
 import threading
 import time
 
-ip = '192.168.175.65'
+ip = '192.168.68.113'
 
-port = 13376
+port = 13378
 server_address = (ip,port)
 chat_client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 chat_client.connect(server_address)
