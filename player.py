@@ -21,6 +21,7 @@ class Player(Entity):
         self.chat_paused = False
         self.display_surface = pygame.display.get_surface()
         self.username = username
+
         # graphics setup
         self.import_player_assets()
         self.status = 'down'
@@ -138,7 +139,7 @@ class Player(Entity):
                 keys = pygame.key.get_pressed()
 
                 # attack input
-                if keys[pygame.K_SPACE]:
+                if keys[pygame.K_SPACE] and self.health > 0:
                     self.attacking = True
                     self.attack_time = pygame.time.get_ticks()
                     self.create_attack()
@@ -149,7 +150,7 @@ class Player(Entity):
                         self.create_magic(style, strength, cost)
 
                 # magic input
-                if keys[pygame.K_LCTRL]:
+                if keys[pygame.K_LCTRL] and self.health > 0:
                     self.attacking = True
                     self.attack_time = pygame.time.get_ticks()
                     style = list(magic_data.keys())[self.magic_index]
@@ -178,7 +179,6 @@ class Player(Entity):
                         self.magic_index = 0
 
                     self.magic = list(magic_data.keys())[self.magic_index]
-
 
     def get_status(self):
 

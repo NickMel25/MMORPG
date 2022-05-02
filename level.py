@@ -239,7 +239,34 @@ class Level:
 
         if self.player.health <= 0:
             self.game_over = True
+            self.game_over_screen()
 
+        if self.game_paused:
+            self.upgrade.display()
+        else:
+            self.visible_sprites.update()
+            self.visible_sprites.enemy_update(self.player)
+            self.player_attack_logic()
+
+    def restart(self):
+        self.player.pos = (2112, 1344)
+        self.player.status = 'down'
+
+        self.player.stats = {'health': 100, 'energy': 60, 'attack': 10, 'magic': 4, 'speed': 5}
+        self.player.max_stats = {'health': 300, 'energy': 140, 'attack': 20, 'magic': 10, 'speed': 10}
+        self.player.upgrade_cost = {'health': 100, 'energy': 100, 'attack': 100, 'magic': 100, 'speed': 100}
+        self.player.health = self.player.stats['health'] * 0.5
+        self.player.energy = self.player.stats['energy'] * 0.8
+        self.player.exp = 0
+        self.player.speed = self.player.stats['speed']
+        player.num_water_potion = 0
+        player.num_blood_potion = 0
+        player.num_coin = 0
+        player.num_bamboo = 0
+
+    def game_over_screen(self):
+
+        if self.game_over:
             # show image "game over"
             bg_rect = pygame.Rect(0, 0, 1280, 720)
             gameover_surf = self.gameover
@@ -257,16 +284,6 @@ class Level:
             smallfont = pygame.font.SysFont(UI_FONT, 16)
             text = smallfont.render('QUIT', True, TEXT_COLOR)
             self.display_surface.blit(text, (685, 395))
-
-        if self.game_paused:
-            self.upgrade.display()
-        else:
-            self.visible_sprites.update()
-            self.visible_sprites.enemy_update(self.player)
-            self.player_attack_logic()
-
-    def restart_location(self):
-        self.player = ''
 
     def path_found(self):
         self.pathfind.is_path_allowed()

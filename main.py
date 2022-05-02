@@ -31,8 +31,8 @@ class Game:
         global game
         global player
 
-        udp_client.start_thread(player,self.level)
-        chat_rect = Chat(self.screen,player.username)
+        udp_client.start_thread(player, self.level)
+        chat_rect = Chat(self.screen, player.username)
         chat_rect.thread_start(self.level)
 
         while True:
@@ -40,7 +40,7 @@ class Game:
             for event in pygame.event.get():
                 if event.type == pygame.MOUSEBUTTONDOWN and boxes.collides(chat_rect.input_rect,event):
                     player.chat_paused = True
-                if event.type == pygame.MOUSEBUTTONDOWN and not boxes.collides(chat_rect.input_rect,event):
+                if event.type == pygame.MOUSEBUTTONDOWN and not boxes.collides(chat_rect.input_rect,event) and not self.level.game_over:
                     player.chat_paused = False
 
                     level.Level.path_found(self.level)
@@ -68,9 +68,9 @@ class Game:
                         mouse = pygame.mouse.get_pos()
 
                         # restart game button
-                        # if 540 <= mouse[0] <= 620 and 385 <= mouse[1] <= 415:
-                        #     game = Game()
-                        #     game.run()
+                        if 540 <= mouse[0] <= 620 and 385 <= mouse[1] <= 415:
+                            self.level.game_over = False
+                            level.Level.restart(self.level)
 
                         # quit game button
                         if 660 <= mouse[0] <= 740 and 385 <= mouse[1] <= 415:

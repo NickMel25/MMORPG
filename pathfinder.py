@@ -83,7 +83,6 @@ class Pathfinder:
 		rect = pygame.Rect((mouse_pos[0] - 16, mouse_pos[1] - 16), (64, 64))
 		self.display_surface.blit(self.select_surf, rect)
 
-
 	def get_coord(self):
 		self.offset.x = self.player.rect.centerx - WIDTH // 2
 		self.offset.y = self.player.rect.centery - HEIGTH // 2
@@ -111,6 +110,6 @@ class Pathfinder:
 		# path
 		finder = AStarFinder()
 		self.player.path, self.runs = finder.find_path(start, end, self.grid)
-		print(self.player.path, end, start)
 		self.grid.cleanup()
 		self.player.set_path(self.player.path)
+
