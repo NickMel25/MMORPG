@@ -1,14 +1,11 @@
-import imp
 import pygame, sys
 from player import Player
 from settings import *
 from level import Level
-import udp_client
+import connection
 from chat_rect import Chat
 import boxes
 game = ''
-
-
 class Game:
     player = ''
 
@@ -18,7 +15,7 @@ class Game:
 
         pygame.init()
         self.screen = pygame.display.set_mode((WIDTH, HEIGTH))
-        pygame.display.set_caption('MMO Game')
+        pygame.display.set_caption('U got Hacked')
         self.clock = pygame.time.Clock()
         self.level = Level()
         player = self.level.return_player()
@@ -27,7 +24,7 @@ class Game:
         global game
         global player
 
-        udp_client.start_thread(player,self.level)
+        connection.start_thread(player,self.level)
         chat_rect = Chat(self.screen,player.username)
         chat_rect.thread_start(self.level)
 
@@ -86,12 +83,11 @@ class Game:
             pygame.display.update()
             self.clock.tick(FPS)
             ans = player.to_string()
-            udp_client.send(ans)
+            connection.send(ans)
 
 
 def main():
     global game
-    
     game = Game()
     # player_stats = player.to_string() 
     game.run()

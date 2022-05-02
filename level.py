@@ -202,7 +202,7 @@ class Level:
         self.add_coin_drop(inventory_rect)
         self.add_water_potion_drop(inventory_rect)
         self.add_blood_potion_drop(inventory_rect)
-        pygame.display.update()
+
 
         if self.player.health <= 0:
             self.game_over = True

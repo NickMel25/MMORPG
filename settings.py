@@ -1,3 +1,4 @@
+
 # game setup
 WIDTH = 1280
 HEIGTH = 720
@@ -63,3 +64,5 @@ monster_data = {
                'notice_radius': 350},
     'bamboo': {'health': 70, 'exp': 120, 'damage': 6, 'attack_type': 'leaf_attack',
                'speed': 3, 'resistance': 3, 'attack_radius': 50, 'notice_radius': 300}}
+
+

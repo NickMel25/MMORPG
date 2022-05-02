@@ -1,77 +1,64 @@
-from queue import Empty
-from argon2 import PasswordHasher
+from argon2 import PasswordHasher, exceptions
 import mysql.connector
 
 #create connection and cursor with database and input the values needed
-cnn = mysql.connector.connect(user='root', password='Shmulik1234',host='localhost',database='mmo_cyber')
-crsr = cnn.cursor()
+create_conn = mysql.connector.connect(user='init', password='1n1t1al1zeuser',host='localhost',database='mmorpg',autocommit=True)
 
-def validity_check(username,password):
-    
+
+def close_conn():
+    create_conn.close()
+
+# input: username (str) and password (str), confirm_password (str)
+# output: instructions (str)
+def create_character(username: str,password: str,confirm_password: str) -> str :
+    # validity check    
+    username = username.strip()
+    password = password.strip()
     #username length check
     if len(username)>15:
-        print("username too long")
-        return False
+        print("Username too long")
+        return "Username too long"
+        
 
     #character validation check (by ascii)
     for c in username:
-        print(c)
-        print(ord(c))
-        if not (47<ord(c)<57 or 64<ord(c)<91 or 96<ord(c)<123 or ord(c) == 95) :
-            print("contains invalid characters")
-            return False
-    
-    #checks if username is already taken
-    query = "SELECT username FROM players where username =%s"
-    value = (username,)
-    crsr.execute(query,value)
-    ans = crsr.fetchall()
-    if ans:
-        print("username already taken")
-        return False    
-    
-    
+        if not (47<ord(c)<58 or 64<ord(c)<91 or 96<ord(c)<123 or ord(c) == 95) :
+            print("Contains invalid characters")
+            return "Invalid characters"
+            
+     
     #hashing password
     ph = PasswordHasher()
-    hash = ph.hash(password)
+    password = ph.hash(password)
     #verifying password
-    passconfirm = input("Please verify your password")
     try:
-        ph.verify(hash,passconfirm)
-    except: # could not catch for some reason the real exception: argon2.exceptions.VerifyMismatchError
+        ph.verify(password,confirm_password)
+    except exceptions.VerifyMismatchError: 
         print("Passwords did not match")
-        return False
-
-    return create_character(username,hash)
-
-def create_character(username,password):
-
-    #sql query
-    query = 'INSERT INTO players (username, password) VALUES (%s, %s)'
-    values = (username,password)
-    try:
-        crsr.execute(query,values)
-    except mysql.connector.IntegrityError:
-        print("Something is wrong, please try again")
-        return False
-    cnn.commit()
-    return True
-
-
-
+        return "Password mismatch"
+    
+    with create_conn.cursor() as create_cursor:
+    # trying to create user
+        try:
+            create_cursor.callproc("createUser",[username,password])
+            create_conn.commit()
+        except mysql.connector.errors.IntegrityError:
+            print("Username already taken")
+            return "Username taken"
+        except mysql.connector.errors.DataError:
+            print("Username too long")
+            return "Username too long"
 
 def main():
 
-    while True:
-        username = input("Enter your username")
-        password = input("Enter your password")
-        username = username.strip()
-
+        username = input("Enter your username\n")
+        password = input("Enter your password\n")
+        confirm_password = input("Confirm your password\n")
+        create_character(username,password,confirm_password)
+        close_conn()
         
-        if validity_check(username, password):
-            break
-        print("username already taken")
-    print("user successfully created!")
+
+
 if __name__ == '__main__':
     main()
 

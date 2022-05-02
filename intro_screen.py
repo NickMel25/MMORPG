@@ -1,13 +1,14 @@
 from queue import Empty
 import pygame
 import boxes
-
+from initial_connection_client import *
 pygame.init()
 screen = pygame.display.set_mode((1460,920))
 base_font = pygame.font.Font(None, 45)
 
 
 Login_img= pygame.image.load(r'Images/Intro_Images/Login.png').convert()
+register_img = pygame.image.load(r'Images/Intro_Images/Register.png')
 intro_img= pygame.image.load(r'Images/Intro_Images/374088.jpg').convert()
 input_bar =  pygame.Surface((545,68))
 
@@ -15,7 +16,8 @@ login_x = (screen.get_width()-Login_img.get_width())/2
 login_y = (screen.get_height()-Login_img.get_height())/2
 username_text = ['',]
 password_text = ['',]
-
+confirmpassword_text = ['',]
+mode = 'login'
 def screenblit(rectangle,x,y):
     if str(type(rectangle)) == "<class 'pygame.Surface'>": 
         return screen.blit(rectangle, (x,y))
@@ -34,33 +36,45 @@ def exit(event):
 
 # ------------------------------------------------------------------------
 
-def display_screen():
+def display_screen(choice: str) -> dict:
 
     global login_y
     global login_x
 
-
     pygame.display.set_caption('Intro yooo dude so cool!!!!')
     screen.blit(intro_img,(0,0))
-
-    screen.blit(Login_img,(login_x,login_y))
-    pygame.display.flip() 
-    input_list = {  
-    "switchlogin" : boxes.input_box(191,41,login_x+10,login_y+10,screen),
-    "switchregister" : boxes.input_box(191,41,login_x+299,login_y+10,screen),
-    "username" : boxes.input_box(421,35,login_x+40,login_y+143,screen),
-    "password" : boxes.input_box(421,35,login_x+40,login_y+286,screen),
-    "cancel" : boxes.input_box(191,41,login_x+10,login_y+450,screen),
-    "apply" : boxes.input_box(191,41,login_x+299,login_y+450,screen),
-    } 
-    pygame.display.flip()
+    if choice == 'login':
+        screen.blit(Login_img,(login_x,login_y))
+        pygame.display.flip() 
+        input_list = {  
+        "switchlogin" : boxes.input_box(191,41,login_x+10,login_y+10,screen),
+        "switchregister" : boxes.input_box(191,41,login_x+299,login_y+10,screen),
+        "username" : boxes.input_box(421,35,login_x+40,login_y+143,screen),
+        "password" : boxes.input_box(421,35,login_x+40,login_y+286,screen),
+        "cancel" : boxes.input_box(191,41,login_x+10,login_y+450,screen),
+        "apply" : boxes.input_box(191,41,login_x+299,login_y+450,screen),
+        } 
+        pygame.display.flip()
+    elif choice == 'signup':
+        screen.blit(register_img,(login_x,login_y))
+        pygame.display.flip() 
+        input_list = {  
+        "switchlogin" : boxes.input_box(191,41,login_x+10,login_y+10,screen),
+        "switchregister" : boxes.input_box(191,41,login_x+299,login_y+10,screen),
+        "username" : boxes.input_box(421,35,login_x+40,login_y+143,screen),
+        "password" : boxes.input_box(421,35,login_x+40,login_y+243,screen),
+        "confirmpassword": boxes.input_box(421,35,login_x+40,login_y+343,screen),
+        "cancel" : boxes.input_box(191,41,login_x+10,login_y+450,screen),
+        "apply" : boxes.input_box(191,41,login_x+299,login_y+450,screen),
+        } 
+        pygame.display.flip()
 
     return input_list
 
 
+
 def key_input(input_rect,rect_name):
-    global username_text
-    global password_text
+    global username_text, password_text, confirmpassword_text
     if rect_name == "username":
         text = username_text[0]
     elif rect_name == "password":
@@ -81,7 +95,7 @@ def key_input(input_rect,rect_name):
                 else:
                     text += event.unicode
 
-                if rect_name == "password":
+                if rect_name == "password" or rect_name == "confrimpassword":
                     pass_text = len(text)*'*'
                 else:
                     pass_text = text
@@ -107,8 +121,9 @@ def key_input(input_rect,rect_name):
 # ------------------------------------------------------------------------
 
 def main():
-    global username_text, password_text
-    rect_list = display_screen()
+    init()
+    global username_text, password_text, confirmpassword_text,mode
+    rect_list = display_screen(mode)
     print(type(rect_list["switchlogin"]))
     print(type(rect_list["username"]))
     print(type(pygame.surface))
@@ -134,13 +149,45 @@ def main():
                             pending = boxes.key_input(rect_list[rect],password_text)
                             pass_text[0] = len(password_text[0])*'*'
                             boxes.font_render(rect_list[rect],base_font,screen,pass_text,(202,202,202))
-                            password_text[0] = pass_text[0]
+                            # password_text[0] = pass_text[0]
                             pygame.display.update()
-
+                    elif rect == "confirmpassword":
+                        while not pending:
+                            pending = boxes.key_input(rect_list[rect],confirmpassword_text)
+                            pass_text[0] = len(confirmpassword_text[0])*'*'
+                            boxes.font_render(rect_list[rect],base_font,screen,pass_text,(202,202,202))
+                            # confirmpassword_text[0] = pass_text[0]
+                            pygame.display.update()
+                    elif rect == "switchregister":
+                        mode = 'signup'
+                        rect_list = display_screen(mode)
+                        username_text[0] = ''
+                        password_text[0] = ''
+                        break
+                    elif rect == "switchlogin":
+                        mode = 'login'
+                        rect_list = display_screen(mode)
+                        username_text[0] = ''
+                        password_text[0] = ''
+                        confirmpassword_text[0] = ''
+                        break
                     elif rect == "apply":
-                        print("we need to connect this to the game")
-                        return username_text[0]
+                        if mode == 'signup':
+                            result = user_connection(mode, username_text[0],password_text[0],confirmpassword_text[0])
+                        elif mode == 'login':
+                            result = user_connection(mode, username_text[0],password_text[0])
+                        if result[0] != "Correct password" and result[0] != "Signup completed":
+                            error_box = boxes.input_box(650,35,login_x-75,login_y-100,screen,(202,202,202),255)
+                            boxes.font_render(error_box,base_font,screen,["[ ! ] "+result[0],],(202,202,202))
+                            pygame.display.update()
+                        else:
+                            return result.pop(0)
+                    elif rect == "cancel":
+                        return
                     else:
                         pending = None
 
 # ------------------------------------------------------------------------
+
+if __name__ == '__main__':
+    main()

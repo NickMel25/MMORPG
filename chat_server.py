@@ -1,4 +1,3 @@
-from glob import glob
 import socket
 from datetime import datetime
 import threading
