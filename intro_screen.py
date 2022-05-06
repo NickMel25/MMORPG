@@ -124,8 +124,6 @@ def main():
     init()
     global username_text, password_text, confirmpassword_text,mode
     rect_list = display_screen(mode)
-    print(type(rect_list["switchlogin"]))
-    print(type(rect_list["username"]))
     print(type(pygame.surface))
     pending = None
     pass_text = ['',]
@@ -181,7 +179,8 @@ def main():
                             boxes.font_render(error_box,base_font,screen,["[ ! ] "+result[0],],(202,202,202))
                             pygame.display.update()
                         else:
-                            return result.pop(0)
+                            result.pop(0)
+                            return result
                     elif rect == "cancel":
                         return
                     else:

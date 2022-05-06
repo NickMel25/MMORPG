@@ -4,24 +4,26 @@ from support import import_folder
 from entity import Entity
 
 # items
-num_water_potion = 0
-num_blood_potion = 0
-num_coin = 0
-num_bamboo = 0
+
 
 
 class Player(Entity):
-    def __init__(self, pos, groups, obstacle_sprites, create_attack, destroy_attack, create_magic, username):
+    def __init__(self, pos, groups, obstacle_sprites, create_attack, destroy_attack, create_magic, data):
         super().__init__(groups)
         self.image = pygame.image.load('graphics/test/player.png').convert_alpha()
         self.rect = self.image.get_rect(topleft=pos)
         self.hitbox = self.rect.inflate(-6, HITBOX_OFFSET['player'])
 
+        self.num_bamboo = int(data[7])
+        self.num_blood_potion = int(data[8])
+        self.num_water_potion = int(data[9])
+        self.num_coin = int(data[10])
+        
 
         self.chat_paused = False
         self.display_surface = pygame.display.get_surface()
 
-        self.username = username
+        self.username = data[0]
         # graphics setup
         self.import_player_assets()
         self.status = 'down'
@@ -229,4 +231,4 @@ class Player(Entity):
 
     def to_string(self):
         #              username :direction(string):is attacking: location (int)  : hitbox
-        return f"{self.username}:{self.status}:{self.attacking}:{self.rect.topleft}:{self.hitbox}:{self.frame_index}"
+        return f"{self.username}:{self.status}:{self.attacking}:{self.rect.topleft}:{self.hitbox}:{self.frame_index}:{self.num_bamboo}:{self.num_blood_potion}:{self.num_water_potion}:{self.num_coin}"

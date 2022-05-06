@@ -116,6 +116,7 @@ def update(username: str,data: list) -> str:
         try:
             update_cursor.callproc('updateData',[username] + data)
             update_conn.commit()
+            return "Completed successfully"
             
         except mysql.connector.errors.DataError as e:
             print("Username too long")

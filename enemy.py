@@ -5,12 +5,13 @@ from settings import *
 from entity import Entity
 from support import *
 import random
-from player import num_water_potion, num_blood_potion, num_coin, num_bamboo
+# from player import num_water_potion, num_blood_potion, num_coin, num_bamboo
 
 
 class Enemy(Entity):
-    def __init__(self, monster_name, pos, groups, obstacle_sprites, damage_player, trigger_death_particles, add_exp):
+    def __init__(self, monster_name, pos, groups, obstacle_sprites, damage_player, trigger_death_particles, add_exp,player):
 
+        self.player = player
         # general setup
         super().__init__(groups)
         self.sprite_type = 'enemy'
@@ -137,23 +138,23 @@ class Enemy(Entity):
             self.add_exp(self.exp)
             random_number = random.randint(1, 4)
             if random_number == 1:
-                player.num_coin += 1
+                self.player.num_coin += 1
             elif random_number == 2:
-                player.num_water_potion += 1
+                self.player.num_water_potion += 1
             elif random_number == 3:
-                player.num_blood_potion += 1
+                self.player.num_blood_potion += 1
             else:
-                player.num_bamboo += 1
+                self.player.num_bamboo += 1
 
             random_number = random.randint(1, 4)
             if random_number == 1:
-                player.num_coin += 1
+                self.player.num_coin += 1
             elif random_number == 2:
-                player.num_water_potion += 1
+                self.player.num_water_potion += 1
             elif random_number == 3:
-                player.num_blood_potion += 1
+                self.player.num_blood_potion += 1
             else:
-                player.num_bamboo += 1
+                self.player.num_bamboo += 1
 
     def hit_reaction(self):
         if not self.vulnerable:

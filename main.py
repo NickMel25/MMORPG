@@ -2,14 +2,16 @@ import pygame, sys
 from player import Player
 from settings import *
 from level import Level
-import connection
+import udp_client
 from chat_rect import Chat
 import boxes
+import intro_screen
+import end_conn_client
 game = ''
 class Game:
     player = ''
 
-    def __init__(self):
+    def __init__(self,data):
         # general setup
         global player 
 
@@ -17,14 +19,14 @@ class Game:
         self.screen = pygame.display.set_mode((WIDTH, HEIGTH))
         pygame.display.set_caption('U got Hacked')
         self.clock = pygame.time.Clock()
-        self.level = Level()
+        self.level = Level(data)
         player = self.level.return_player()
 
     def run(self):
         global game
         global player
 
-        connection.start_thread(player,self.level)
+        udp_client.start_thread(player,self.level)
         chat_rect = Chat(self.screen,player.username)
         chat_rect.thread_start(self.level)
 
@@ -36,6 +38,7 @@ class Game:
                 if event.type == pygame.MOUSEBUTTONDOWN and not boxes.collides(chat_rect.input_rect,event):
                     player.chat_paused = False
                 if event.type == pygame.QUIT:
+                    end_conn_client.end_conn()
                     pygame.quit()
                     sys.exit()
                 if event.type == pygame.KEYDOWN:
@@ -83,12 +86,13 @@ class Game:
             pygame.display.update()
             self.clock.tick(FPS)
             ans = player.to_string()
-            connection.send(ans)
+            udp_client.send(ans)
 
 
 def main():
     global game
-    game = Game()
+    data = intro_screen.main()
+    game = Game(data)
     # player_stats = player.to_string() 
     game.run()
 

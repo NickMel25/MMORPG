@@ -2,7 +2,8 @@ from math import floor
 import socket
 import threading
 import chat_server
-
+import init_conn_serv
+import end_conn_serv
 ip = '0.0.0.0'
 port = 10001
 udp_server = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -10,7 +11,7 @@ udp_server.bind((ip,port))
 
 client_time = {'attack':0,'hit':0,"movement":0}
 data_list = {'username':'','direction':'','attacking':'','location':'','hitbox':'','frame':'','bamboo':0,'bloodpotion':0,'spiritinabottle':0,'coins':0,'health':0,'mana':0,'attack':0}
-client_conn = {'ip':'',"port":0,"pubkey":'','seckey':''}
+client_conn = {'ip':'',"port":0,"pubkey":'','seckey':'','pad_char':''}
 client_data = {'game':data_list.copy(),"timers":client_time.copy(),'conn':client_conn.copy()}
 client_list = {}
 
@@ -68,6 +69,10 @@ def append(data: str) -> None:
     client_info['game']['location'] = temp
     client_info['game']['hitbox'] = answers[4]
     client_info['game']['frame'] = int(floor(float(answers[5])))
+    client_info['game']['bamboo'] = int(answers[6])
+    client_info['game']['bloodpotion'] = int(answers[7])
+    client_info['game']['waterpotion'] = int(answers[8])
+    client_info['game']['coins'] = int(answers[9])
     client_info['conn']['ip'] = data[1][0]
     client_info['conn']['port'] = int(data[1][1])
 
@@ -106,6 +111,15 @@ def receive():
 
 
 def main():
+
+    thread = threading.Thread(target=init_conn_serv.main,args=[client_list,client_data])
+    thread.daemon = True
+    thread.start()
+
+    thread = threading.Thread(target=end_conn_serv.main,args=[client_list,client_data])
+    thread.daemon = True
+    thread.start()
+
     thread = threading.Thread(target=chat_server.main)
     thread.daemon = True
     thread.start()

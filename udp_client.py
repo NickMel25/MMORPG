@@ -1,8 +1,6 @@
 import socket
 from threading import Thread
 import client_performer
-from settings import PUBLIC_SERVER_KEY
-
 
 server_IP = '10.0.0.185'
 ip =socket.gethostbyname(socket.gethostname())

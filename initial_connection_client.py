@@ -14,7 +14,8 @@ def init():
     private_client_key,public_client_key = encryption.assymetric_generate_keys()
     client_connection.sendall(public_client_key.publickey().exportKey())
     print("tryting to receive public key")
-    public_server_key = RSA.importKey(client_connection.recv(1024*4), passphrase=None) 
+    public_server_key = client_connection.recv(1024*4)
+    public_server_key = RSA.importKey(public_server_key, passphrase=None) 
     print("tryting to receive secret key")
     secret_key = client_connection.recv(1024*4)
     secret_key = encryption.assymetric_decrypt_message(secret_key,private_client_key)
@@ -27,11 +28,12 @@ def init():
     encrypted_confirmation_message = encryption.symmetric_encrypt_message(confirmation_message,secret_key,pad_char)
     client_connection.sendall(encrypted_confirmation_message)
 
-    connection.public_client_key = public_client_key
-    connection.public_server_key = public_server_key
-    connection.private_client_key = private_client_key
-    connection.secret_key = secret_key
-    connection.pad_char = pad_char
+    connection.set_conn(private_client_key,public_client_key,public_server_key,secret_key,pad_char)
+    # connection.public_client_key = public_client_key
+    # connection.public_server_key = public_server_key
+    # connection.private_client_key = private_client_key
+    # connection.secret_key = secret_key
+    # connection.pad_char = pad_char
   
 
 

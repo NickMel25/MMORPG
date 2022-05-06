@@ -17,11 +17,11 @@ from magic import MagicPlayer
 from upgrade import Upgrade
 import intro_screen 
 # import globals
-from player import num_water_potion, num_blood_potion, num_coin, num_bamboo
+# from player import num_water_potion, num_blood_potion, num_coin, num_bamboo
 
 
 class Level:
-    def __init__(self):
+    def __init__(self,data):
 
 
         self.player_sprites = pygame.sprite.Group()
@@ -44,7 +44,7 @@ class Level:
         self.attackable_sprites = pygame.sprite.Group()
 
         # sprite setup
-        self.create_map()
+        self.create_map(data)
 
         # user interface
         self.ui = UI()
@@ -63,7 +63,7 @@ class Level:
     def return_player(self):
         return self.player
 
-    def create_map(self):
+    def create_map(self,data):
         layouts = {
             'boundary': import_csv_layout('map/map_FloorBlocks.csv'),
             'object': import_csv_layout('map/map_Objects.csv'),
@@ -73,7 +73,14 @@ class Level:
             'grass': import_folder('graphics/grass'),
             'objects': import_folder('graphics/objects')
         }
-        username = intro_screen.main()
+
+        self.player = Player(
+                (int(data[3]),int(data[4])),
+                [self.visible_sprites],
+                self.obstacle_sprites,
+                self.create_attack,
+                self.destroy_attack,
+                self.create_magic,data)
 
         for style, layout in layouts.items():
             for row_index, row in enumerate(layout):
@@ -90,13 +97,14 @@ class Level:
 
                         if style == 'entities':
                             if col == '394':
-                                self.player = Player(
-                                    (x, y),
-                                    [self.visible_sprites],
-                                    self.obstacle_sprites,
-                                    self.create_attack,
-                                    self.destroy_attack,
-                                    self.create_magic,username)
+                                # self.player = Player(
+                                #     (x, y),
+                                #     [self.visible_sprites],
+                                #     self.obstacle_sprites,
+                                #     self.create_attack,
+                                #     self.destroy_attack,
+                                #     self.create_magic,data)
+                                pass
                             else:
                                 if col == '390':
                                     monster_name = 'bamboo'
@@ -113,7 +121,7 @@ class Level:
                                     self.obstacle_sprites,
                                     self.damage_player,
                                     self.trigger_death_particles,
-                                    self.add_exp)
+                                    self.add_exp,self.player)
 
     def create_attack(self):
         self.current_attack = Weapon(self.player, [self.visible_sprites, self.attack_sprites])
@@ -170,22 +178,22 @@ class Level:
     # item drops
     def add_water_potion_drop(self, inventory_rect):
         font = pygame.font.SysFont(WATER_COLOR, UI_FONT_SIZE)
-        counter = font.render(str(player.num_water_potion), 1, TEXT_COLOR)
+        counter = font.render(str(self.player.num_water_potion), 1, TEXT_COLOR)
         self.display_surface.blit(counter, (inventory_rect.x+9, inventory_rect.y+8))
 
     def add_blood_potion_drop(self, inventory_rect):
         font = pygame.font.SysFont(WATER_COLOR, UI_FONT_SIZE)
-        counter = font.render(str(player.num_blood_potion), 1, TEXT_COLOR)
+        counter = font.render(str(self.player.num_blood_potion), 1, TEXT_COLOR)
         self.display_surface.blit(counter, (inventory_rect.x+73, inventory_rect.y+8))
 
     def add_coin_drop(self, inventory_rect):
         font = pygame.font.SysFont(WATER_COLOR, UI_FONT_SIZE)
-        counter = font.render(str(player.num_coin), 1, TEXT_COLOR)
+        counter = font.render(str(self.player.num_coin), 1, TEXT_COLOR)
         self.display_surface.blit(counter, (inventory_rect.x+137, inventory_rect.y+8))
 
     def add_bamboo_drop(self, inventory_rect):
         font = pygame.font.SysFont(WATER_COLOR, UI_FONT_SIZE)
-        counter = font.render(str(player.num_bamboo), 1, TEXT_COLOR)
+        counter = font.render(str(self.player.num_bamboo), 1, TEXT_COLOR)
         self.display_surface.blit(counter, (inventory_rect.x+201, inventory_rect.y+8))
 
     def run(self):
@@ -197,7 +205,6 @@ class Level:
         inventory_surf = self.inventory
         inventory_rect = inventory_surf.get_rect(center=inventory_rect.center)
         self.display_surface.blit(inventory_surf, inventory_rect)
-
         self.add_bamboo_drop(inventory_rect)
         self.add_coin_drop(inventory_rect)
         self.add_water_potion_drop(inventory_rect)
@@ -264,8 +271,7 @@ class YSortCameraGroup(pygame.sprite.Group):
             offset_pos = sprite.rect.topleft - self.offset
             self.display_surface.blit(sprite.image, offset_pos)
 
-    def players_draw(self,players):
-        pass
+
 
     def enemy_update(self, player):
         enemy_sprites = [sprite for sprite in self.sprites() if
