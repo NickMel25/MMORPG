@@ -2,6 +2,8 @@ import pygame
 from fake_entities import *
 import main
 
+last_hurt = 0
+
 players = {}
 rect = ''
 player_stats = ''
@@ -105,6 +107,8 @@ def enemy_exists(id):
 
 
 def print_monsters_around_player(data):
+    global last_hurt
+
     type = data[0]
     health = data[1]
     moving = data[2]
@@ -118,19 +122,22 @@ def print_monsters_around_player(data):
 
     id = data[4]
     is_attacking = data[5]
-    time_to_move = data[6]
+    should_player_get_damage = data[6]
+
+    damage_player = False
+    if should_player_get_damage == 'True':
+        damage_player = True
+        current_time = pygame.time.get_ticks()
+        if current_time - last_hurt >= player.invulnerability_duration:
+            level.damage_player(10)
+            last_hurt = pygame.time.get_ticks()
+
     the_player_it_goes_to = data[7][1:-1]
 
-    players_name = the_player_it_goes_to.split(',')[0]
-    players_name = players_name[1:-1]
-
-    players_location = str(the_player_it_goes_to.split(',')[1] + the_player_it_goes_to.split(',')[2])
-    players_location = players_location.replace(' ', ',')
-    players_location = players_location[1:]
-
-    if not (players_location == ''):
-        players_location = players_location[1:-1]
-        players_location = list(map(int, players_location.split(',')))
+    if not (the_player_it_goes_to == ''):
+        the_player_it_goes_to = str(the_player_it_goes_to.split(',')[0] + the_player_it_goes_to.split(',')[1])
+        the_player_it_goes_to = the_player_it_goes_to.replace(' ', ',')
+        the_player_it_goes_to = list(map(int, the_player_it_goes_to.split(',')))
 
     display_surface = pygame.display.get_surface()
     half_width = display_surface.get_size()[0] // 2
@@ -138,12 +145,12 @@ def print_monsters_around_player(data):
 
     current_enemy = enemy_exists(id)
     if current_enemy == '':
-        current_enemy = fake_monster(type, health, location, id, is_moving, players_location)
+        current_enemy = fake_monster(type, health, location, id, is_moving, the_player_it_goes_to)
         enemy_group.add(current_enemy)
 
     else:
         current_enemy.set_moving_and_location(location, is_moving)
-        current_enemy.set_destination(players_location)
+        current_enemy.set_destination(the_player_it_goes_to)
 
     temp_enemy_group.add(current_enemy)
 
@@ -161,4 +168,5 @@ def print_monsters_around_player(data):
     level.visible_sprites.add(current_enemy)
 
     temp_enemy_group.remove(current_enemy)
+
     pass

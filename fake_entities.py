@@ -1,3 +1,5 @@
+import math
+
 import pygame
 from settings import monster_data
 
@@ -63,13 +65,20 @@ class fake_monster(pygame.sprite.Sprite):
             enemy_vec = pygame.math.Vector2(self.next_location)
             player_vec = pygame.math.Vector2(self.the_player_it_goes_to)
 
-            direction = (player_vec - enemy_vec).normalize()
+            shit = math.sqrt((self.next_location[0] - self.the_player_it_goes_to[0])**2 + (self.next_location[1] - self.the_player_it_goes_to[1])**2)
 
-            direction.x = direction.x * self.speed
-            direction.y = direction.y * self.speed
+            if shit >= self.speed:
+                direction = (player_vec - enemy_vec).normalize()
 
-            self.next_location[0] += direction.x
-            self.next_location[1] += direction.y
+                direction.x = direction.x * self.speed
+                direction.y = direction.y * self.speed
+
+                self.next_location[0] = int(self.next_location[0] + direction.x)
+                self.next_location[1] = int(self.next_location[1] + direction.y)
+
+            else:
+                self.next_location[0] = self.the_player_it_goes_to[0]
+                self.next_location[1] = self.the_player_it_goes_to[1]
 
     def set_moving_and_location(self, location, moving):
         self.next_location = location
@@ -77,6 +86,3 @@ class fake_monster(pygame.sprite.Sprite):
 
     def set_destination(self, the_player_it_goes_to):
         self.the_player_it_goes_to = the_player_it_goes_to
-
-    def set_death(self, isdead):
-        self.isdead = isdead

@@ -156,12 +156,12 @@ class Level:
                         else:
                             target_sprite.get_damage(self.player, attack_sprite.sprite_type)
 
-    def damage_player(self, amount, attack_type):
+    def damage_player(self, amount):
         if self.player.vulnerable:
             self.player.health -= amount
             self.player.vulnerable = False
             self.player.hurt_time = pygame.time.get_ticks()
-            self.animation_player.create_particles(attack_type, self.player.rect.center, [self.visible_sprites])
+            # self.animation_player.create_particles(attack_type, self.player.rect.center, [self.visible_sprites])
 
     def trigger_death_particles(self, pos, particle_type):
 

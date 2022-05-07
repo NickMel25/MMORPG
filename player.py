@@ -59,7 +59,7 @@ class Player(Entity):
 
         # damage timer
         self.vulnerable = True
-        self.hurt_time = None
+        self.hurt_time = 0
         self.invulnerability_duration = 500
 
     def import_player_assets(self):

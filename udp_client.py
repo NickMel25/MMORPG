@@ -4,10 +4,10 @@ import threading
 from threading import Thread
 import client_performer
 
-server_IP = '192.168.115.24'
+server_IP = '10.100.102.10'
 ip = socket.gethostbyname(socket.gethostname())
-port = 12345
-server_port = 10001
+port = 12035
+server_port = 16985
 
 udp_client = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 udp_client.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)

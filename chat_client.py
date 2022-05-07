@@ -3,9 +3,9 @@ import threading
 import time
 
 
-ip = '192.168.115.24'
-port = 10365
-server_address = (ip,port)
+ip = '10.100.102.10'
+port = 13021
+server_address = (ip, port)
 
 chat_client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 chat_client.bind((ip, port))
@@ -13,6 +13,7 @@ chat_client.connect(server_address)
 
 username = 'Ben'
 text = ''
+
 
 def send_message(msg):
     global chat_client

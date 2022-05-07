@@ -38,9 +38,9 @@ UPGRADE_BG_COLOR_SELECTED = '#EEEEEE'
 
 # weapons
 weapon_data = {
-    'sword': {'cooldown': 100, 'damage': 15, 'graphic': 'graphics/weapons/sword/full.png'},
-    'axe': {'cooldown': 300, 'damage': 20, 'graphic': 'graphics/weapons/axe/full.png'},
-    'crossbow': {'cooldown': 90, 'damage': 30, 'graphic': 'graphics/weapons/crossbow/full.png'}}
+    'sword': {'cooldown': 150, 'damage': 10, 'graphic': 'graphics/weapons/sword/full.png'},
+    'axe': {'cooldown': 150, 'damage': 10, 'graphic': 'graphics/weapons/axe/full.png'},
+    'crossbow': {'cooldown': 150, 'damage': 10, 'graphic': 'graphics/weapons/crossbow/full.png'}}
 
 # magic
 magic_data = {

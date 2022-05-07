@@ -14,7 +14,7 @@ clock = pygame.time.Clock()
 
 
 ip = '0.0.0.0'
-port = 10001
+port = 16985
 udp_server = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 udp_server.bind((ip, port))
 client_dict = {}
@@ -24,7 +24,8 @@ print(ip)
 enemies_list = []
 on_enemies_screen_players = []
 moving_monsters = []
-monster_count = 30
+monster_count = 10
+last_attacked = 0
 
 layouts = {
     'floor': import_csv_layout('map/map_Floor.csv'),
@@ -55,6 +56,16 @@ monster_data = {
 # -----------------------------------------------------------------MONSTER--------------------------------------------------------------------
 # ============================================================================================================================================
 
+def get_good_placing():
+    xEnemy = random.randrange(0, 50)
+    yEnemy = random.randrange(0, 56)
+
+    while (int(layouts['floor'][xEnemy][yEnemy])) in ban_list_floor or (int(layouts['boundary'][xEnemy][yEnemy]) != -1) or (int(layouts['object'][xEnemy][yEnemy]) != -1):
+        xEnemy = random.randrange(0, 50)
+        yEnemy = random.randrange(0, 56)
+
+    return xEnemy, yEnemy
+
 
 def create_enemies_place():
     global enemies_list
@@ -62,13 +73,9 @@ def create_enemies_place():
 
     for i in range(monster_count):
 
-        info_list = {'type': "", 'health': 0, 'moving': False, 'location': "", 'close_players': "", 'id': 0, 'is_attacking': False, 'time_to_move': 0, 'the_player_it_goes_to': ''}
-        xEnemy = random.randrange(0, 50)
-        yEnemy = random.randrange(0, 56)
+        info_list = {'type': "", 'health': 0, 'moving': False, 'location': "", 'close_players': "", 'id': 0, 'is_attacking': False, 'should_player_get_damage': False, 'the_player_it_goes_to': ''}
 
-        while (int(layouts['floor'][xEnemy][yEnemy])) in ban_list_floor or (int(layouts['boundary'][xEnemy][yEnemy]) != -1) or (int(layouts['object'][xEnemy][yEnemy]) != -1) :
-            xEnemy = random.randrange(0, 50)
-            yEnemy = random.randrange(0, 56)
+        xEnemy, yEnemy = get_good_placing()
 
         # arr[xEnemy][yEnemy] = 'x'
 
@@ -102,23 +109,62 @@ def move_monster(direction, counter):
 
     speed = monster_data[enemies_list[counter]['type']]['speed']
     direction.x = direction.x * speed
-    enemies_list[counter]['location'][0] += direction.x
+    enemies_list[counter]['location'][0] += int(direction.x)
 
     direction.y = direction.y * speed
-    enemies_list[counter]['location'][1] += direction.y
+    enemies_list[counter]['location'][1] += int(direction.y)
 
 
-def get_damage(counter, monster_rect, closest_player, weapon_rect):
+def get_damage(counter, monster_rect, weapon_rect):
     global enemies_list
+    global last_attacked
+    current_time = pygame.time.get_ticks()
 
-    player = client_dict[closest_player[0]]
     shit = weapon_rect[6:-2]
     arr = shit.split(', ')
     weaponRect = pygame.Rect(int(arr[0]), int(arr[1]), int(arr[2]), int(arr[3]))
 
     collide = pygame.Rect.colliderect(monster_rect, weaponRect)
-    if collide:
+    time_passed = (current_time - last_attacked)/1000
+
+    if collide and time_passed >= 1:
+        last_attacked = pygame.time.get_ticks()
         enemies_list[counter]['health'] -= 10
+
+
+def check_player_enemy_collision(monster_rect, player_rect, counter):
+    shit = player_rect[6:-2]
+    arr = shit.split(', ')
+    player_rect = pygame.Rect(int(arr[0]), int(arr[1]), int(arr[2]), int(arr[3]))
+
+    collide = pygame.Rect.colliderect(monster_rect, player_rect)
+    if collide:
+        enemies_list[counter]['should_player_get_damage'] = True
+
+
+def erase_attacks():
+    global enemies_list
+
+    counter = 0
+    for monster in enemies_list:
+        enemies_list[counter]['should_player_get_damage'] = False
+
+
+def check_death(counter):
+    global enemies_list
+
+    if enemies_list[counter]['health'] <= 0:
+
+        xEnemy, yEnemy = get_good_placing()
+
+        type, stats = random.choice(list(monster_data.items()))
+
+        enemies_list[counter]['health'] = monster_data[type]['health']
+        enemies_list[counter]['moving'] = False
+        enemies_list[counter]['is_attacking'] = False
+        enemies_list[counter]['close_players'] = ""
+        enemies_list[counter]['the_player_it_goes_to'] = ""
+        enemies_list[counter]['location'] = [yEnemy * 64, xEnemy * 64]
 
 
 def enemy_player_proximity():
@@ -127,11 +173,12 @@ def enemy_player_proximity():
     while True:
         counter = 0
         for monster in enemies_list:
-            closest_player_now = ['nothing', 0]
+            closest_player = ["", 1000000000]
             close_players_to_enemy = []
+
             for player in client_dict:
 
-                closest_player = [client_dict[player]["username"], 1000000000]
+                check_death(counter)
 
                 player_location = (client_dict[player]["location"][0], client_dict[player]["location"][1])
                 monster_location = (enemies_list[counter]['location'][0], enemies_list[counter]['location'][1])
@@ -141,35 +188,40 @@ def enemy_player_proximity():
 
                 distance, direction = get_player_monster_distance(player_location, monster_location)
 
-                if closest_player[1] > distance:
-                    closest_player[1] = client_dict[player]["location"]
+                # if closest_player[1] > distance:
+                #     closest_player[0] = client_dict[player]["username"]
+                #     closest_player[1] = client_dict[player]["location"]
 
                 if distance <= monster_data[enemies_list[counter]['type']]['notice_radius']:
                     close_players_to_enemy.append(client_dict[player])
                     enemies_list[counter]['moving'] = True
-                    move_monster(direction, counter)
-
-                enemies_list[counter]['the_player_it_goes_to'] = closest_player
+                    # move_monster(direction, counter)
+                    enemies_list[counter]['the_player_it_goes_to'] = client_dict[player]["location"]
+                else:
+                    enemies_list[counter]['the_player_it_goes_to'] = enemies_list[counter]['location']
 
                 if distance is None:
                     continue
 
+                weapon_rect = client_dict[player]["weapon"]
+                monster_rect = pygame.Rect(enemies_list[counter]['location'][0], enemies_list[counter]['location'][1],64, 64)
+                check_player_enemy_collision(monster_rect, client_dict[player]["hitbox"], counter)
+
                 if distance <= monster_data[enemies_list[counter]['type']]['attack_radius'] and client_dict[player]["attacking"] == 'True':
                     print("attacking me!!!!")
                     enemies_list[counter]['is_attacking'] = True
-                    # damage_player(enemies_list[counter], closest_player)
-                    weapon_rect = client_dict[player]["weapon"]
-                    monster_rect = pygame.Rect(enemies_list[counter]['location'][0], enemies_list[counter]['location'][1], 64, 64)
-                    get_damage(counter, monster_rect, closest_player, weapon_rect)
+                    get_damage(counter, monster_rect, weapon_rect)
 
             # if closest_player_now == enemies_list[counter]['the_player_it_goes_to']:
-            #     close_players_to_enemy.remove(client_list[counter])
+            #     close_players_to_enemy.remove(client_dict[counter])
 
             enemies_list[counter]['close_players'] = close_players_to_enemy
             counter += 1
 
         make_monster_string()
         clock.tick(30)
+
+        erase_attacks()
 
 
 def make_monster_string():
@@ -178,7 +230,7 @@ def make_monster_string():
     responses_array = []
     counter = 0
     while counter < monster_count:
-        response = f"{enemies_list[counter]['type']}:{enemies_list[counter]['health']}:{enemies_list[counter]['moving']}:{enemies_list[counter]['location']}:{enemies_list[counter]['id']}:{enemies_list[counter]['is_attacking']}:{enemies_list[counter]['time_to_move']}:{enemies_list[counter]['the_player_it_goes_to']}"
+        response = f"{enemies_list[counter]['type']}:{enemies_list[counter]['health']}:{enemies_list[counter]['moving']}:{enemies_list[counter]['location']}:{enemies_list[counter]['id']}:{enemies_list[counter]['is_attacking']}:{enemies_list[counter]['should_player_get_damage']}:{enemies_list[counter]['the_player_it_goes_to']}"
         responses_array.append(response)
         send_monsters_to_users(responses_array, enemies_list[counter]['close_players'])
         counter += 1
@@ -246,6 +298,7 @@ def append(data):
     info_list["weapon"] = answers[6]
     info_list["connection"] = data[1]
     print(answers)
+
 
 def iterate_users(nearby, conn):
     for user in nearby:
