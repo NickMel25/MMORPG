@@ -1,3 +1,4 @@
+from ipaddress import v4_int_to_packed
 from random import randrange
 import encryption
 import socket
@@ -17,88 +18,84 @@ class Init_conn_serv:
         self.private_key, self.public_key = encryption.assymetric_generate_keys()
         self.client_list = sclient_list
         self.client_data = sclient_data
+    
+    
+    def close_connection(self):
+        self.server_connection.close()
+
 
     def connecting(self):
         self.server_connection.listen()
         conn, addr = self.server_connection.accept()
         return conn, addr
 
+
     def thread_handler(self,conn,addr) -> None:
-        # keys exchange and setup
-        self.client_public_key = RSA.importKey(conn.recv(1024*4), passphrase=None) 
-        conn.sendall(self.public_key.publickey().exportKey())
-        secret_key = encryption.symmetric_generate_key()
-        encrypted_secret_key = encryption.assymetric_encrypt_message(secret_key,self.client_public_key)
-        conn.sendall(encrypted_secret_key)
-        pad_char = chr(randrange(1,26)+96)
-        encrypted_pad_char = encryption.assymetric_encrypt_message(pad_char.encode(),self.client_public_key)
-        conn.sendall(encrypted_pad_char)
-        print("pad char sent")
-        confirmation_message = conn.recv(1024*4)
-        confirmation_message = encryption.symmetric_decrypt_message(confirmation_message,secret_key,pad_char)
-        print(confirmation_message)
+        try:
+            # keys exchange and setup
+            self.client_public_key = RSA.importKey(conn.recv(1024*4), passphrase=None) 
+            conn.sendall(self.public_key.publickey().exportKey())
+            secret_key = encryption.symmetric_generate_key()
+            encrypted_secret_key = encryption.assymetric_encrypt_message(secret_key,self.client_public_key)
+            conn.sendall(encrypted_secret_key)
+            pad_char = chr(randrange(1,26)+96)
+            encrypted_pad_char = encryption.assymetric_encrypt_message(pad_char.encode(),self.client_public_key)
+            conn.sendall(encrypted_pad_char)
+            print("pad char sent")
+            confirmation_message = conn.recv(1024*4)
+            confirmation_message = encryption.symmetric_decrypt_message(confirmation_message,secret_key,pad_char)
+            print(confirmation_message)
 
-        # login / signup validity
-        redo = True
-        while redo:
-            encrypted_answer = conn.recv(1024*4)
-            decrypted_answer = encryption.symmetric_decrypt_message(encrypted_answer,secret_key,pad_char)
-            mode,username,password,confirmpassword = decrypted_answer.split(":")
-            if mode == 'login':
-                result = db_access.login(username,password)
-            if mode == 'signup':
-                result = db_access.signup(username,password,confirmpassword)
-            print(result)
+            # login / signup validity
+            redo = True
+            while redo:
+                encrypted_answer = conn.recv(1024*4)
+                decrypted_answer = encryption.symmetric_decrypt_message(encrypted_answer,secret_key,pad_char)
+                mode,username,password,confirmpassword = decrypted_answer.split(":")
+                if mode == 'login':
+                    result = db_access.login(username,password)
+                if mode == 'signup':
+                    result = db_access.signup(username,password,confirmpassword)
+                print(result)
 
-            if result == 'Signup completed' or result == 'Correct password':
-                user_data = db_access.load(username)
-                answer = result+":"+':'.join([str(value) for value in user_data])
-                redo = False
-            elif mode == 'login' and (result == 'Incorrect password' or result == 'User not found' or result == 'Name too long'):
-                answer = 'Incorrect username or password:'
-            elif mode == 'signup' and (result == 'Username or Password cant be empty' or result == 'Password mismatch' or result == 'Invalid characters' or result == 'Username too long' or result == 'Username taken') :
-                answer = result+":"
-            
-            encrypted_result = encryption.symmetric_encrypt_message(answer,secret_key,pad_char)
-            conn.sendall(encrypted_result)
-            pass
-        username = user_data[0]
-        self.client_list[username] = self.client_data.copy()
-        self.client_list[username]['conn']['seckey'] = secret_key 
-        self.client_list[username]['conn']['ip'] = addr[0]
-        self.client_list[username]['conn']['port'] = addr[1]
-        self.client_list[username]['conn']['pad_char'] = pad_char
-        self.client_list[username]['conn']['pubkey'] = self.client_public_key
-        self.client_list[username]['game']['health'] = user_data[1]
-        self.client_list[username]['game']['mana'] = user_data[2]
-        self.client_list[username]['game']['location'] = (user_data[3],user_data[4])
-        self.client_list[username]['game']['attack'] = user_data[5]
-        self.client_list[username]['game']['bamboo'] = user_data[7]
-        self.client_list[username]['game']['bloodpotion'] = user_data[8]
-        self.client_list[username]['game']['spiritinabottle'] = user_data[9]
-        self.client_list[username]['game']['coins'] = user_data[10]
-        pass
+                if result == 'Signup completed' or result == 'Correct password':
+                    user_data = db_access.load(username)
+                    answer = result+":"+':'.join([str(value) for value in user_data])
+                    redo = False
+                elif mode == 'login' and (result == 'Incorrect password' or result == 'User not found' or result == 'Name too long'):
+                    answer = 'Incorrect username or password:'
+                elif mode == 'signup' and (result == 'Username or Password cant be empty' or result == 'Password mismatch' or result == 'Invalid characters' or result == 'Username too long' or result == 'Username taken') :
+                    answer = result+":"
+                
+                encrypted_result = encryption.symmetric_encrypt_message(answer,secret_key,pad_char)
+                conn.sendall(encrypted_result)
 
-    def end_conn() -> None:
-        pass
-
-def main(client_list,client_data) -> None:
-    init_conn_serv = Init_conn_serv(client_list,client_data)
-    while True:
-        conn,addr = init_conn_serv.connecting()
-        thread = threading.Thread(target=init_conn_serv.thread_handler,args=[conn,addr])
-        thread.daemon = True
-        thread.start()
-        print("created new thread")
-
-# def main() -> None:
-#     thread = threading.Thread(target=start_conn)
-#     thread.daemon = True
-#     thread.start()
-    # thread = threading.Thread(target=end_conn)
-    # thread.daemon = True
-    # thread.start()
+            username = user_data[0]
+            self.client_list[username] = self.client_data.copy()
+            self.client_list[username]['conn']['seckey'] = secret_key 
+            self.client_list[username]['conn']['ip'] = addr[0]
+            self.client_list[username]['conn']['port'] = addr[1]
+            self.client_list[username]['conn']['pad_char'] = pad_char
+            self.client_list[username]['conn']['pubkey'] = self.client_public_key
+            self.client_list[username]['game']['health'] = user_data[1]
+            self.client_list[username]['game']['mana'] = user_data[2]
+            self.client_list[username]['game']['location'] = (user_data[3],user_data[4])
+            self.client_list[username]['game']['attack'] = user_data[5]
+            self.client_list[username]['game']['bamboo'] = user_data[7]
+            self.client_list[username]['game']['bloodpotion'] = user_data[8]
+            self.client_list[username]['game']['spiritinabottle'] = user_data[9]
+            self.client_list[username]['game']['coins'] = user_data[10]
+        except ValueError as e:
+            print(e)
+            conn.close()
+            return
 
 
-if __name__ == "__main__":
-    main()
+    def main(self) -> None:
+        while True:
+            conn,addr = self.connecting()
+            thread = threading.Thread(target=self.thread_handler,args=[conn,addr])
+            thread.daemon = True
+            thread.start()
+            print("created new init thread")
+

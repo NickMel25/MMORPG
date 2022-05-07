@@ -2,16 +2,16 @@ import pygame, sys
 from player import Player
 from settings import *
 from level import Level
-import udp_client
+# import udp_client
 from chat_rect import Chat
 import boxes
 import intro_screen
 import end_conn_client
-game = ''
-class Game:
-    player = ''
+from connection import Connection
 
-    def __init__(self,data):
+class Game:
+
+    def __init__(self,data,connection):
         # general setup
         global player 
 
@@ -21,14 +21,16 @@ class Game:
         self.clock = pygame.time.Clock()
         self.level = Level(data)
         player = self.level.return_player()
+        self.connection = connection
 
+    
     def run(self):
         global game
         global player
 
-        udp_client.start_thread(player,self.level)
-        chat_rect = Chat(self.screen,player.username)
-        chat_rect.thread_start(self.level)
+        self.connection.udp_client.start_thread(player,self.level)
+        chat_rect = Chat(self.screen,player.username,self.connection.chat_client)
+        chat_rect.thread_start()
 
         while True:
             
@@ -38,9 +40,9 @@ class Game:
                 if event.type == pygame.MOUSEBUTTONDOWN and not boxes.collides(chat_rect.input_rect,event):
                     player.chat_paused = False
                 if event.type == pygame.QUIT:
-                    end_conn_client.end_conn()
-                    pygame.quit()
-                    sys.exit()
+                    self.connection.end_conn_client.end_conn()
+                    raise Exception("closing all")
+
                 if event.type == pygame.KEYDOWN:
                     if player.chat_paused == True:
                         if player.chat_paused == True and event.key == pygame.K_BACKSPACE:
@@ -56,25 +58,13 @@ class Game:
 
                     elif event.key == pygame.K_m:
                             self.level.toggle_menu()
-
-
-                    
-                    
-
-
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     if self.level.game_over:
                         mouse = pygame.mouse.get_pos()
-
-                        # # restart game button
-                        # if 540 <= mouse[0] <= 620 and 385 <= mouse[1] <= 415:
-                        #     game = Game()
-                        #     game.run()
-                        # # quit game button
-                        # if 660 <= mouse[0] <= 740 and 385 <= mouse[1] <= 415:
-                            # pygame.quit()
-                            # sys.exit()
-        
+                        # quit game button
+                        if 660 <= mouse[0] <= 740 and 385 <= mouse[1] <= 415:
+                            self.connection.end_conn_client.end_conn()
+                            raise Exception("closing all")
 
                         
 
@@ -86,16 +76,23 @@ class Game:
             pygame.display.update()
             self.clock.tick(FPS)
             ans = player.to_string()
-            udp_client.send(ans)
+            self.connection.udp_client.send(ans)
 
 
 def main():
-    global game
-    data = intro_screen.main()
-    game = Game(data)
-    # player_stats = player.to_string() 
-    game.run()
-
+    try: 
+        connection = Connection()
+        data = intro_screen.main(connection.init_conn_client)
+        connection.chat_client.connect()
+        game = Game(data,connection)
+        game.run()
+    finally:
+        try:
+            connection.close_con()
+        except UnboundLocalError:
+            pass
+        pygame.quit()
+        sys.exit()
 
 if __name__ == '__main__':
     main()

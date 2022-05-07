@@ -2,56 +2,57 @@ import socket
 from datetime import datetime
 import threading
 from time import sleep
+import encryption
 
-ip = '0.0.0.0'
+
+class Chat_server:
+    def __init__(self,client_list) -> None:        
+        self.ip = '0.0.0.0'
+        self.port = 13372
+        self.chat_connection_server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.chat_connection_server.bind((self.ip,self.port))
+
+        self.client_list = client_list
+        self.conn_list = {}
 
 
-port = 13372
-conn_list = {}
-server_address = (ip,port)
-chat_server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-chat_server.bind(server_address)
+    def close_connection(self):
+        self.chat_connection_server.close()
 
-def connecting():
-    global chat_server
-    chat_server.listen()
-    conn, addr = chat_server.accept()
-    return conn
-
-def thread_handler(conn):
-    print("heya")
-    global chat_server
-    username = conn.recv(1024)
-    username = username.decode()
-    if not(username in conn_list):
-        conn_list[username] = conn
-    while True:
-        data = conn.recv(1024)
         
-        data = data.decode()
-        print(data)
-        if not data:
-            conn_list.pop(username,None)
-            break
-        date_now = datetime.now()
-        current_time = date_now.strftime("%H:%M")
-        ans = f"[{current_time}] {username}: {data}"
-        for client in conn_list:
-            # if not(username in conn_list):
-            conn_list[client].sendall(str.encode(ans))
-        sleep(10)
+    def connecting(self):
+        global chat_server
+        self.chat_connection_server.listen()
+        conn, addr = self.chat_connection_server.accept()
+        return conn, addr
 
-def main():
-    global chat_server
+    def thread_handler(self,conn,addr):
 
-    print("connecting")
+        username = [k for k, v in self.client_list.items() if v['conn']['ip'] == addr[0]][0]
+        if not(username in self.conn_list):
+            self.conn_list[username] = conn
+        
+        while True:
+            data = conn.recv(1024)
+            if not data:
+                self.conn_list.pop(username,None)
+                break
+            decrypted_msg = encryption.symmetric_decrypt_message(data, self.client_list[username]['conn']['seckey'], self.client_list[username]['conn']['pad_char'])
+            date_now = datetime.now()
+            current_time = date_now.strftime("%H:%M")
+            ans = f"[{current_time}] {username}: {decrypted_msg}"
+            encrypted_ans = encryption.symmetric_encrypt_message(ans, self.client_list[username]['conn']['seckey'], self.client_list[username]['conn']['pad_char'])
+            for client in self.conn_list:
+                # if not(username in self.conn_list):
+                self.conn_list[client].sendall(encrypted_ans)
+            sleep(10)
 
-    while True:
-        conn = connecting()
-        thread = threading.Thread(target=thread_handler,args=[conn])
-        thread.daemon = True
-        thread.start()
 
-if __name__ == '__main__':
-    main()
 
+    def main(self):
+        while True:
+            conn,addr = self.connecting()
+            thread = threading.Thread(target=self.thread_handler,args=[conn,addr])
+            thread.daemon = True
+            thread.start()
+            print("created new chat thread")

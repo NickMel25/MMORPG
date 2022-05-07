@@ -5,8 +5,8 @@ from Crypto.PublicKey import RSA
 import db_access
 
 class End_conn_serv:
-    # END CONNECTION, NEED TO DECIDE HOW TO SAVE ALL CHANGES!!!!!!!!!!!!!!!!
-    def __init__(self,client_list,client_data) -> None:
+    
+    def __init__(self,client_list) -> None:
         self.port = 57141
         self.ip = '0.0.0.0'
         self.server_connection = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -14,7 +14,11 @@ class End_conn_serv:
 
         self.private_key, self.public_key = encryption.assymetric_generate_keys()
         self.client_list = client_list
-        self.client_data = client_data
+    
+    
+    def close_connection(self):
+        self.server_connection.close()
+
 
     def connecting(self):
         self.server_connection.listen()
@@ -23,11 +27,6 @@ class End_conn_serv:
 
 
     def thread_handler(self,conn,addr):
-        # ans = conn.recv(1024*4)
-        # username = [k for k, v in self.client_list.items() if v['conn']['ip'] == addr[0]][0]
-        # pad_char = self.client_list[username]['conn']['pad_char']
-        # secret_key = self.client_list[username]['conn']['seckey']
-        # decrypted_ans = encryption.symmetric_decrypt_message(ans,secret_key,pad_char)
         username = [k for k, v in self.client_list.items() if v['conn']['ip'] == addr[0]][0]
         pad_char = self.client_list[username]['conn']['pad_char']
         secret_key = self.client_list[username]['conn']['seckey']
@@ -45,17 +44,14 @@ class End_conn_serv:
         result = db_access.update(username,data)
         encrypted_result = encryption.symmetric_encrypt_message(result,secret_key,pad_char)
         conn.sendall(encrypted_result)
+        self.client_list.pop(username)
         
         
 
-def main(client_list,client_data):
-    end_conn_serv = End_conn_serv(client_list,client_data)
-    while True:
-        conn,addr = end_conn_serv.connecting()
-        thread = threading.Thread(target=end_conn_serv.thread_handler,args=[conn,addr])
-        thread.daemon = True
-        thread.start()
-        print("created new thread")
-
-if __name__ == "__main__":
-    main()
+    def main(self):
+        while True:
+            conn,addr = self.connecting()
+            thread = threading.Thread(target=self.thread_handler,args=[conn,addr])
+            thread.daemon = True
+            thread.start()
+            print("created new end thread")

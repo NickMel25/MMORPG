@@ -1,7 +1,6 @@
 from queue import Empty
 import pygame
 import boxes
-from initial_connection_client import *
 pygame.init()
 screen = pygame.display.set_mode((1460,920))
 base_font = pygame.font.Font(None, 45)
@@ -120,8 +119,8 @@ def key_input(input_rect,rect_name):
 
 # ------------------------------------------------------------------------
 
-def main():
-    init()
+def main(init_conn_client):
+    
     global username_text, password_text, confirmpassword_text,mode
     rect_list = display_screen(mode)
     print(type(pygame.surface))
@@ -171,9 +170,9 @@ def main():
                         break
                     elif rect == "apply":
                         if mode == 'signup':
-                            result = user_connection(mode, username_text[0],password_text[0],confirmpassword_text[0])
+                            result = init_conn_client.user_connection(mode, username_text[0],password_text[0],confirmpassword_text[0])
                         elif mode == 'login':
-                            result = user_connection(mode, username_text[0],password_text[0])
+                            result = init_conn_client.user_connection(mode, username_text[0],password_text[0])
                         if result[0] != "Correct password" and result[0] != "Signup completed":
                             error_box = boxes.input_box(650,35,login_x-75,login_y-100,screen,(202,202,202),255)
                             boxes.font_render(error_box,base_font,screen,["[ ! ] "+result[0],],(202,202,202))

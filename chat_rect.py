@@ -1,14 +1,11 @@
-from time import sleep
 import pygame
-import chat_client
 import boxes
 import threading
 
-from level import Level
 
 class Chat:
 
-    def __init__(self,screen,username):
+    def __init__(self,screen,username,chat_client):
         self.screen = screen
         self.display_surface = pygame.display.get_surface()
         self.input_rect = boxes.input_box(300,20,10,520,self.screen,(0,0,0),100)
@@ -18,6 +15,7 @@ class Chat:
         self.insert_text = ['',]
         self.chat_log = ['']*15
         self.username = username
+        self.chat_client = chat_client
 
     def shift_append(self,msg):
         for i in range(len(self.chat_log)-1):
@@ -38,9 +36,7 @@ class Chat:
             boxes.screenblit(text_surface,(self.chat_rect.x,self.chat_rect.y+3+i),self.screen,255,(255,255,255))
             i+=20
             
-            # if text_surface.get_width() < self.input_rect.w:
-            #     boxes.screenblit(self.input_rect,(self.input_rect.x,self.input_rect.y),self.screen,100,(0,0,0))
-            #     boxes.screenblit(text_surface,(self.input_rect.x,self.input_rect.y+3),self.screen,255,(255,255,255))
+
         pygame.display.update()
         pass
 
@@ -61,28 +57,26 @@ class Chat:
                 temp = ''
 
             
-
-    def recv_chat(self,username):
-        chat_client.init(username)
+    def recv_chat(self):
         msg = ['']
-
         while True:
-            msg[0] = chat_client.main()
+            msg[0] = self.chat_client.recv()
             
             self.sort_text(msg)
             self.display()
 
+
     def send_text(self,text):
-        chat_client.send_message(text[0])
+        self.chat_client.send_message(text[0])
         self.insert_text[0] = ''
 
-    def thread_start(self,level):
-        self.level = level
 
-        thread = threading.Thread(target=self.recv_chat, args=[level.player.username])
+    def thread_start(self):
+        thread = threading.Thread(target=self.recv_chat)
         thread.daemon = True
         thread.start()
     
+
     def get_events(self,main_events):
         self.events.append(main_events)
 

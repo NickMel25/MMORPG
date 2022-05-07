@@ -1,35 +1,35 @@
 import socket
-import threading
-import time
+import encryption
 
-ip = '10.0.0.185'
-
-port = 13372
-server_address = (ip,port)
-chat_client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-chat_client.connect(server_address)
-username = 'Ben'
-text = ''
-
-def send_message(msg):
-    global chat_client
-    chat_client.sendall(str.encode(msg))
+class Chat_client:
+    def __init__(self, secret_key : bytes, private_client_key, public_client_key, public_server_key, pad_char : str) -> None:
+        self.ip = socket.gethostbyname(socket.gethostname())
+        self.port = 13372
+        self.chat_client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         
+        self.secret_key = secret_key
+        self.private_client_key = private_client_key
+        self.public_client_key = public_client_key
+        self.public_server_key = public_server_key
+        self.pad_char = pad_char
+    
 
-def init(user):
-    global username
-    username = user
-    chat_client.sendall(str.encode(username))
+    def close_connection(self) -> None:
+        self.chat_client.close()
 
 
-def main():
-    global chat_client
-    data = chat_client.recv(1024)
-    print(data)
-    if not data:
-        return None
-    return data.decode()
+    def connect(self):
+        self.chat_client.connect((self.ip,self.port))
+
+    def send_message(self, msg : str):
+        encrypted_msg = encryption.symmetric_encrypt_message(msg,self.secret_key,self.pad_char)
+        self.chat_client.sendall(encrypted_msg)
+            
+
+
+    def recv(self):
+        data = self.chat_client.recv(1024)
+        if not data:
+            return None
+        return encryption.symmetric_decrypt_message(data,self.secret_key,self.pad_char)
         
-
-if __name__ == '__main__':
-    main(username)

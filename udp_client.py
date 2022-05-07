@@ -1,48 +1,54 @@
 import socket
 from threading import Thread
 import client_performer
-
-server_IP = '10.0.0.185'
-ip =socket.gethostbyname(socket.gethostname())
-
-port = 12345
-server_port = 10001
-
-
-udp_client = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-udp_client.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-udp_client.bind((ip,port))
+import encryption
 
 
 
 
-def recv_thread_handler(player,level):
-    while True:
-        data = receive()
-        data = data
-        print(data)
-        client_performer.display_players(data,player,level)
+class Udp_client:
+    def __init__(self, secret_key : bytes, private_client_key, public_client_key, public_server_key, pad_char : str ) -> None:
+
+        self.ip =socket.gethostbyname(socket.gethostname())
+        self.port = 10001
+        self.udp_client = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        self.udp_client.connect((self.ip,self.port))
+
+        self.secret_key = secret_key
+        self.private_client_key = private_client_key
+        self.public_client_key = public_client_key
+        self.public_server_key = public_server_key
+        self.pad_char = pad_char
+
+    
+    def close_connection(self):
+        self.udp_client.close()
 
 
-
-def receive():
-        msg ,conn= udp_client.recvfrom(1024)
-        msg = msg.decode()
-        print(msg)
-        return msg
-
-def send(msg):
-    global server_IP
-    global server_port
-    udp_client.sendto(str.encode(msg),(server_IP,server_port))
+    def recv_thread_handler(self,player,level):
+        while True:
+            data = self.receive()
+            data = data
+            print(data)
+            client_performer.display_players(data,player,level)
 
 
-def proccess(data):    
-    send(data)
-    ans = receive()
-    print(ans)
+    def receive(self):
+            msg ,conn = self.udp_client.recvfrom(1024)
+            decrypted_msg = encryption.symmetric_decrypt_message(msg,self.secret_key,self.pad_char)
+            return decrypted_msg
 
-def start_thread(player,level):
-    players_nearby_thread = Thread(target=recv_thread_handler, daemon=True, args=(player,level))
-    players_nearby_thread.start()
+    def send(self, msg : str):
+        encrypted_msg = encryption.symmetric_encrypt_message(msg,self.secret_key,self.pad_char)
+        self.udp_client.sendto(encrypted_msg,(self.ip,self.port))
+
+
+    # def proccess(self,data):    
+    #     self.send(data)
+    #     ans = self.receive()
+    #     print(ans)
+
+    def start_thread(self,player,level):
+        players_nearby_thread = Thread(target=self.recv_thread_handler, daemon=True, args=(player,level))
+        players_nearby_thread.start()
 
