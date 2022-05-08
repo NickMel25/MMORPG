@@ -12,7 +12,6 @@ import threading
 pygame.init()
 clock = pygame.time.Clock()
 
-
 ip = '0.0.0.0'
 port = 16985
 udp_server = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
