@@ -1,5 +1,7 @@
 from ipaddress import v4_int_to_packed
 from random import randrange
+
+from pygame import init
 import encryption
 import socket
 import threading
@@ -33,6 +35,8 @@ class Init_conn_serv:
     def thread_handler(self,conn,addr) -> None:
         try:
             # keys exchange and setup
+            # conn.sendall(str.encode('blablabla'))
+            # print('sent 1')
             self.client_public_key = RSA.importKey(conn.recv(1024*4), passphrase=None) 
             conn.sendall(self.public_key.publickey().exportKey())
             secret_key = encryption.symmetric_generate_key()
@@ -42,6 +46,8 @@ class Init_conn_serv:
             encrypted_pad_char = encryption.assymetric_encrypt_message(pad_char.encode(),self.client_public_key)
             conn.sendall(encrypted_pad_char)
             print("pad char sent")
+            conn.sendall(encrypted_pad_char)
+            print("second try")
             confirmation_message = conn.recv(1024*4)
             confirmation_message = encryption.symmetric_decrypt_message(confirmation_message,secret_key,pad_char)
             print(confirmation_message)
@@ -85,10 +91,15 @@ class Init_conn_serv:
             self.client_list[username]['game']['bloodpotion'] = user_data[8]
             self.client_list[username]['game']['spiritinabottle'] = user_data[9]
             self.client_list[username]['game']['coins'] = user_data[10]
+            conn.close()
         except ValueError as e:
             print(e)
             conn.close()
             return
+        except ConnectionResetError as e:
+            conn.close()
+            return
+        
 
 
     def main(self) -> None:
@@ -99,3 +110,9 @@ class Init_conn_serv:
             thread.start()
             print("created new init thread")
 
+def mains():
+    init_conn = Init_conn_serv({},{})
+    init_conn.main()
+
+if __name__ == "__main__":
+    mains()

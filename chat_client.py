@@ -2,8 +2,9 @@ import socket
 import encryption
 
 class Chat_client:
-    def __init__(self, secret_key : bytes, private_client_key, public_client_key, public_server_key, pad_char : str) -> None:
-        self.ip = socket.gethostbyname(socket.gethostname())
+    def __init__(self, ip : str, secret_key : bytes, private_client_key, public_client_key, public_server_key, pad_char : str) -> None:
+        # self.ip = socket.gethostbyname(socket.gethostname())
+        self.ip = ip
         self.port = 13372
         self.chat_client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         

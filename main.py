@@ -78,10 +78,11 @@ class Game:
             ans = player.to_string()
             self.connection.udp_client.send(ans)
 
-
+ 
 def main():
     try: 
-        connection = Connection()
+        ip = intro_screen.get_ip()
+        connection = Connection(ip)
         data = intro_screen.main(connection.init_conn_client)
         connection.chat_client.connect()
         game = Game(data,connection)

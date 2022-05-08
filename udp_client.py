@@ -7,9 +7,10 @@ import encryption
 
 
 class Udp_client:
-    def __init__(self, secret_key : bytes, private_client_key, public_client_key, public_server_key, pad_char : str ) -> None:
+    def __init__(self, ip : str, secret_key : bytes, private_client_key, public_client_key, public_server_key, pad_char : str ) -> None:
 
-        self.ip =socket.gethostbyname(socket.gethostname())
+        # self.ip =socket.gethostbyname(socket.gethostname())
+        self.ip = ip
         self.port = 10001
         self.udp_client = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         self.udp_client.connect((self.ip,self.port))

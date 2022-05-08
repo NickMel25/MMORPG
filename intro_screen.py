@@ -115,7 +115,39 @@ def key_input(input_rect,rect_name):
                 
                 else:
                     text = text[:-1]
-                    return event
+
+
+def get_ip():
+    ip_box = boxes.input_box(421,35,login_x+40,login_y+143,screen)
+    pygame.display.update()
+    text = ''
+    while True:
+        for event in pygame.event.get():
+            exit(event)
+            
+            if event.type == pygame.KEYDOWN:
+                
+                if event.key == pygame.K_RETURN:
+                    return text
+                elif event.key == pygame.K_BACKSPACE:
+                    text = text[:-1]
+                else:
+                    text += event.unicode
+
+
+                text_surface = base_font.render(text, True, (255, 255, 255))
+                print(text_surface.get_width())
+                
+                
+                if text_surface.get_width() < ip_box.w:
+                    boxes.screenblit(ip_box,(ip_box.x,ip_box.y),screen,255,(202,202,202))
+                    boxes.screenblit(text_surface,(ip_box.x,ip_box.y+3),screen,255,(202,202,202))
+                
+
+                
+                else:
+                    text = text[:-1]
+                pygame.display.update()
 
 # ------------------------------------------------------------------------
 
@@ -188,4 +220,4 @@ def main(init_conn_client):
 # ------------------------------------------------------------------------
 
 if __name__ == '__main__':
-    main()
+    get_ip()

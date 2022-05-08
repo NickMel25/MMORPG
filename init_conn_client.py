@@ -6,9 +6,10 @@ from Crypto.PublicKey import RSA
 
 class Init_conn_client:
     
-    def __init__(self) -> None:
+    def __init__(self, ip : str) -> None:
         self.port = 14175
-        self.ip = socket.gethostbyname(socket.gethostname())
+        # self.ip = socket.gethostbyname(socket.gethostname())
+        self.ip = ip
         self.client_connection = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.client_connection.connect((self.ip,self.port))
         results = self.exchange_keys()
@@ -64,3 +65,10 @@ class Init_conn_client:
         print(result)
         return result.split(":")
 
+
+def main():
+    init_conn = Init_conn_client()
+
+
+if __name__ == "__main__":
+    main()
