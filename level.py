@@ -236,16 +236,10 @@ class Level:
             self.upgrade.display()
         else:
             self.visible_sprites.update()
-            # self.visible_sprites.enemy_update(self.player)
-            self.fake_enemy_update()
             self.player_attack_logic()
 
     def restart_location(self):
         self.player = ''
-
-    def fake_enemy_update(self):
-        for fake_enemy in self.enemy_sprites:
-            fake_enemy.enemy_update()
 
 
 class YSortCameraGroup(pygame.sprite.Group):

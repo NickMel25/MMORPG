@@ -4,7 +4,7 @@ import time
 
 
 ip = '10.100.102.10'
-port = 13021
+port = 10320
 server_address = (ip, port)
 
 chat_client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)

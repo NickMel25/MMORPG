@@ -124,20 +124,14 @@ def print_monsters_around_player(data):
     is_attacking = data[5]
     should_player_get_damage = data[6]
 
-    damage_player = False
     if should_player_get_damage == 'True':
-        damage_player = True
-        current_time = pygame.time.get_ticks()
-        if current_time - last_hurt >= player.invulnerability_duration:
-            level.damage_player(10)
-            last_hurt = pygame.time.get_ticks()
+        level.damage_player(10)
+
+    # should_get_stuff = data[8]
+    # if (should_get_stuff == 'True'):
+    #     # get the frickin stuff
 
     the_player_it_goes_to = data[7][1:-1]
-
-    if not (the_player_it_goes_to == ''):
-        the_player_it_goes_to = str(the_player_it_goes_to.split(',')[0] + the_player_it_goes_to.split(',')[1])
-        the_player_it_goes_to = the_player_it_goes_to.replace(' ', ',')
-        the_player_it_goes_to = list(map(int, the_player_it_goes_to.split(',')))
 
     display_surface = pygame.display.get_surface()
     half_width = display_surface.get_size()[0] // 2
@@ -150,7 +144,6 @@ def print_monsters_around_player(data):
 
     else:
         current_enemy.set_moving_and_location(location, is_moving)
-        current_enemy.set_destination(the_player_it_goes_to)
 
     temp_enemy_group.add(current_enemy)
 
@@ -161,11 +154,13 @@ def print_monsters_around_player(data):
 
     enemy_offset = enemy_rect.topleft
 
-    current_enemy.location(enemy_offset)
     temp_enemy_group.update()
 
     level.enemy_sprites.add(current_enemy)
     level.visible_sprites.add(current_enemy)
+
+    if health == '0':
+        level.visible_sprites.remove(current_enemy)
 
     temp_enemy_group.remove(current_enemy)
 
