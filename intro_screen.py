@@ -139,7 +139,6 @@ def main():
                             pygame.display.update()
 
                     elif rect == "apply":
-                        print("we need to connect this to the game")
                         return username_text[0]
                     else:
                         pending = None

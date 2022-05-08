@@ -2,7 +2,7 @@ import socket
 from threading import Thread
 import client_performer
 
-server_IP = '192.168.1.207'
+server_IP = '192.168.1.206'
 ip =socket.gethostbyname(socket.gethostname())
 
 port = 12345

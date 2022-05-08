@@ -15,7 +15,6 @@ from particles import AnimationPlayer
 from magic import MagicPlayer
 from upgrade import Upgrade
 import intro_screen
-from pathfinder import *
 
 # import globals
 from player import num_water_potion, num_blood_potion, num_coin, num_bamboo
@@ -33,7 +32,6 @@ class Level:
 
         image = pygame.image.load('graphics/player/down_idle/idle_down.png')
         pygame.display.update()
-
         self.path = []
         matrix = import_csv_layout('map/map_FloorBlocks.csv')
         self.matrix = matrix
@@ -121,8 +119,6 @@ class Level:
                                     self.damage_player,
                                     self.trigger_death_particles,
                                     self.add_exp)
-
-        self.pathfind = Pathfinder(self.matrix, self.player)
 
     def create_attack(self):
         self.current_attack = Weapon(self.player, [self.visible_sprites, self.attack_sprites])
@@ -220,7 +216,6 @@ class Level:
 
     def run(self):
         self.visible_sprites.custom_draw(self.player)
-        self.pathfind.draw_active_cell()
         self.ui.display(self.player)
 
         # draw inventory
@@ -259,6 +254,7 @@ class Level:
         self.player.energy = self.player.stats['energy'] * 0.8
         self.player.exp = 0
         self.player.speed = self.player.stats['speed']
+        self.path = []
         player.num_water_potion = 0
         player.num_blood_potion = 0
         player.num_coin = 0
@@ -285,10 +281,13 @@ class Level:
             text = smallfont.render('QUIT', True, TEXT_COLOR)
             self.display_surface.blit(text, (685, 395))
 
-    def path_found(self):
-        self.pathfind.is_path_allowed()
-        if self.pathfind.path_allowed:
-            self.pathfind.create_path()
+            # stop the player
+            self.player.pressed_mouse_pos = -1
+
+    def path_found(self, mouse):
+        self.player.pressed_mouse_pos = mouse
+        self.player.in_time_location_x = self.player.rect.centerx
+        self.player.in_time_location_y = self.player.rect.centery
 
 
 class YSortCameraGroup(pygame.sprite.Group):
@@ -302,18 +301,53 @@ class YSortCameraGroup(pygame.sprite.Group):
         self.offset = pygame.math.Vector2()
 
         # creating the floor
-        self.floor_surf = pygame.image.load('graphics/tilemap/ground.png').convert()
-        self.floor_rect = self.floor_surf.get_rect(topleft=(0, 0))
+        self.floor_surf_Au = pygame.image.load('graphics/tilemap/groundAu.png').convert()
+        self.floor_surf_Al = pygame.image.load('graphics/tilemap/groundAl.png').convert()
+        self.floor_surf_Bu = pygame.image.load('graphics/tilemap/groundBu.png').convert()
+        self.floor_surf_Bl = pygame.image.load('graphics/tilemap/groundBl.png').convert()
+        self.floor_surf_Cu = pygame.image.load('graphics/tilemap/groundCu.png').convert()
+        self.floor_surf_Cl = pygame.image.load('graphics/tilemap/groundCl.png').convert()
+        self.floor_rect_Au = self.floor_surf_Au.get_rect(topleft=(0, 0))
+        self.floor_rect_Al = self.floor_surf_Al.get_rect(topleft=(0, 12024))
+        self.floor_rect_Bu = self.floor_surf_Bu.get_rect(topleft=(10240, 0))
+        self.floor_rect_Bl = self.floor_surf_Bl.get_rect(topleft=(10240, 12024))
+        self.floor_rect_Cu = self.floor_surf_Cu.get_rect(topleft=(20480, 0))
+        self.floor_rect_Cl = self.floor_surf_Cl.get_rect(topleft=(20480, 12024))
 
     def custom_draw(self, player):
-
         # getting the offset
         self.offset.x = player.rect.centerx - self.half_width
         self.offset.y = player.rect.centery - self.half_height
-
         # drawing the floor
-        floor_offset_pos = self.floor_rect.topleft - self.offset
-        self.display_surface.blit(self.floor_surf, floor_offset_pos)
+        # area A
+        if 0 < player.rect.centerx < 10880:
+            # upper
+            if 0 < player.rect.centery < 12384:
+                floor_offset_pos_Au = self.floor_rect_Au.topleft - self.offset
+                self.display_surface.blit(self.floor_surf_Au, floor_offset_pos_Au)
+            # lower
+            elif 12384 <= player.rect.centery < 24768:
+                floor_offset_pos_Al = self.floor_rect_Al.topleft - self.offset
+                self.display_surface.blit(self.floor_surf_Al, floor_offset_pos_Al)
+        # area B
+        elif 10880 <= player.rect.centerx < 21120:
+            # upper
+            if 0 < player.rect.centery < 12384:
+                floor_offset_pos_Bu = self.floor_rect_Bu.topleft - self.offset
+                self.display_surface.blit(self.floor_surf_Bu, floor_offset_pos_Bu)
+            # lower
+            elif 12384 <= player.rect.centery < 24768:
+                floor_offset_pos_Bl = self.floor_rect_Bl.topleft - self.offset
+                self.display_surface.blit(self.floor_surf_Bl, floor_offset_pos_Bl)
+
+        # area C upper
+        elif 0 < player.rect.centery < 12384:
+            floor_offset_pos_Cu = self.floor_rect_Cu.topleft - self.offset
+            self.display_surface.blit(self.floor_surf_Cu, floor_offset_pos_Cu)
+        # area C lower
+        else:
+            floor_offset_pos_Cl = self.floor_rect_Cl.topleft - self.offset
+            self.display_surface.blit(self.floor_surf_Cl, floor_offset_pos_Cl)
 
         # for sprite in self.sprites():
         for sprite in sorted(self.sprites(), key=lambda sprite: sprite.rect.centery):

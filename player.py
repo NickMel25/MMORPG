@@ -2,7 +2,6 @@ import pygame
 from settings import *
 from support import import_folder
 from entity import Entity
-from pathfinder import *
 
 # items
 num_water_potion = 0
@@ -36,6 +35,10 @@ class Player(Entity):
         self.collision_rects = []
         self.empty_path = empty_path
         self.pos = self.hitbox.center
+
+        self.pressed_mouse_pos = pygame.mouse.get_pos()
+        self.in_time_location_x = self.rect.centerx
+        self.in_time_location_y = self.rect.centery
 
         # weapon
         self.create_attack = create_attack
@@ -92,29 +95,26 @@ class Player(Entity):
                 self.collision_rects.append(rect)
 
     def get_direction(self):
-        if self.collision_rects:
-            start = pygame.math.Vector2(self.pos)
-            end = pygame.math.Vector2(self.collision_rects[0].center)
-            self.direction = (end - start).normalize()
-            self.direction.y = round(self.direction.y)
-            self.direction.x = round(self.direction.x)
-            if self.direction.y == -1:
-                self.status = 'up'
-            elif self.direction.y == 1:
-                self.status = 'down'
-            else:
-                self.direction.y = 0
 
-            if self.direction.x == 1:
-                self.status = 'right'
-            elif self.direction.x == -1:
-                self.status = 'left'
-            else:
-                self.direction.x = 0
-
+        self.direction.y = self.get_player_distance_direction()[1]
+        self.direction.x = self.get_player_distance_direction()[0]
+        if self.direction.y == -1:
+            self.status = 'up'
+        elif self.direction.y == 1:
+            self.status = 'down'
         else:
-            self.direction = pygame.math.Vector2(0, 0)
-            self.path = []
+            self.direction.y = 0
+
+        if self.direction.x == 1:
+            self.status = 'right'
+        elif self.direction.x == -1:
+            self.status = 'left'
+        else:
+            self.direction.x = 0
+
+        #else:
+            #self.direction = pygame.math.Vector2(0, 0)
+            #self.path = []
 
     def check_collisions(self):
         if self.collision_rects:
@@ -260,19 +260,49 @@ class Player(Entity):
         else:
             self.energy = self.stats['energy']
 
+    def get_player_distance_direction(self):
+
+        if self.pressed_mouse_pos != -1:
+            start_x = int(self.rect.centerx // 64 + 1)
+            start_y = int(self.rect.centery // 64 + 1)
+
+            offset_x = self.in_time_location_x - WIDTH // 2
+            offset_y = self.in_time_location_y - HEIGTH // 2
+
+            mouse = self.pressed_mouse_pos
+            row = int((mouse[1] + offset_y) // 64 + 1)
+            col = int((mouse[0] + offset_x) // 64 + 1)
+
+            mouse_pos_vec = pygame.math.Vector2(col, row)
+            player_vec = pygame.math.Vector2(start_x, start_y)
+            distance = (mouse_pos_vec - player_vec).magnitude()
+
+            if distance > 0:
+                self.direction = (mouse_pos_vec - player_vec).normalize()
+            else:
+                self.direction = pygame.math.Vector2()
+                self.pressed_mouse_pos = -1
+
+            return self.direction
+
+        else:
+            return [0, 0]
+
     def update(self):
+        self.input()
+        self.cooldowns()
+        self.get_direction()
+
+        self.get_player_distance_direction()
         self.input()
         self.cooldowns()
         self.get_status()
 
-# <<<<<<< HEAD
-#         self.animate()
-#         self.move(self.stats['speed'])
-# =======
+        if self.pressed_mouse_pos != -1:
+            self.move(self.speed)
+
         self.update_position()
         self.animate()
-
-    #    self.move(self.stats['speed'])
         self.energy_recovery()
 
     def to_string(self):

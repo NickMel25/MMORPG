@@ -2,7 +2,7 @@ import socket
 import threading
 import time
 
-ip = '192.168.1.207'
+ip = '192.168.1.206'
 port = 13372
 
 server_address = (ip,port)

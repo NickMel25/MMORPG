@@ -6,7 +6,6 @@ from level import Level
 import udp_client
 from chat_rect import Chat
 import boxes
-import pathfinder
 
 game = ''
 
@@ -27,7 +26,7 @@ class Game:
 
     def run(self):
 
-        pygame.mouse.set_visible(False)
+        pygame.mouse.set_visible(True)
         global game
         global player
 
@@ -43,7 +42,7 @@ class Game:
                 if event.type == pygame.MOUSEBUTTONDOWN and not boxes.collides(chat_rect.input_rect,event) and not self.level.game_over:
                     player.chat_paused = False
 
-                    level.Level.path_found(self.level)
+                    level.Level.path_found(self.level, pygame.mouse.get_pos())
 
                 if event.type == pygame.QUIT:
                     pygame.quit()
@@ -61,7 +60,7 @@ class Game:
                             chat_rect.insert_text[0] += event.unicode
 
                     elif event.key == pygame.K_m:
-                            self.level.toggle_menu()
+                        self.level.toggle_menu()
 
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     if self.level.game_over:
