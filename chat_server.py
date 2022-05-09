@@ -28,7 +28,7 @@ class Chat_server:
 
     def thread_handler(self,conn,addr):
 
-        username = [k for k, v in self.client_list.items() if v['conn']['ip'] == addr[0]][0]
+        username = conn.recv(1024).decode()
         if not(username in self.conn_list):
             self.conn_list[username] = conn
         

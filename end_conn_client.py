@@ -13,17 +13,16 @@ class End_conn_client:
         self.public_server_key = public_server_key
         self.pad_char = pad_char
     
-    def end_conn(self):
-        # ip = socket.gethostbyname(socket.gethostname())
-
+    def end_conn(self,username):
         
         client_connection = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        
-        with client_connection.connect((self.ip,self.port)):
-            result = ''
-            while result != "Completed successfully":
-                result = client_connection.recv(1024*4)
-                result = encryption.symmetric_decrypt_message(result,self.secret_key,self.pad_char)
-                print(result)
-            return result
+        client_connection.connect((self.ip,self.port))
+        client_connection.send(username.encode())
+        result = ''
+        while result != "Completed successfully":
+            result = client_connection.recv(1024*4)
+            result = encryption.symmetric_decrypt_message(result,self.secret_key,self.pad_char)
+            print(result)
+        client_connection.close()
+        return result
 

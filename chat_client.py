@@ -19,8 +19,9 @@ class Chat_client:
         self.chat_client.close()
 
 
-    def connect(self):
+    def connect(self,username):
         self.chat_client.connect((self.ip,self.port))
+        self.chat_client.send(username.encode())
 
     def send_message(self, msg : str):
         encrypted_msg = encryption.symmetric_encrypt_message(msg,self.secret_key,self.pad_char)

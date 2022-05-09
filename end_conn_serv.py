@@ -27,7 +27,7 @@ class End_conn_serv:
 
 
     def thread_handler(self,conn,addr):
-        username = [k for k, v in self.client_list.items() if v['conn']['ip'] == addr[0]][0]
+        username = conn.recv(1024).decode()
         pad_char = self.client_list[username]['conn']['pad_char']
         secret_key = self.client_list[username]['conn']['seckey']
         

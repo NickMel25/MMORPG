@@ -20,11 +20,13 @@ class Udp_client:
         self.public_client_key = public_client_key
         self.public_server_key = public_server_key
         self.pad_char = pad_char
-
+        self.username = ''
     
     def close_connection(self):
         self.udp_client.close()
 
+    def set_username(self,username):
+        self.username = username 
 
     def recv_thread_handler(self,player,level):
         while True:
@@ -41,7 +43,7 @@ class Udp_client:
 
     def send(self, msg : str):
         encrypted_msg = encryption.symmetric_encrypt_message(msg,self.secret_key,self.pad_char)
-        self.udp_client.sendto(encrypted_msg,(self.ip,self.port))
+        self.udp_client.sendto(self.username.encode()+" ".encode()+encrypted_msg,(self.ip,self.port))
 
 
     # def proccess(self,data):    

@@ -9,6 +9,7 @@ import intro_screen
 import end_conn_client
 from connection import Connection
 
+username = ''
 class Game:
 
     def __init__(self,data,connection):
@@ -40,7 +41,7 @@ class Game:
                 if event.type == pygame.MOUSEBUTTONDOWN and not boxes.collides(chat_rect.input_rect,event):
                     player.chat_paused = False
                 if event.type == pygame.QUIT:
-                    self.connection.end_conn_client.end_conn()
+                    self.connection.end_conn_client.end_conn(username)
                     raise Exception("closing all")
 
                 if event.type == pygame.KEYDOWN:
@@ -63,7 +64,7 @@ class Game:
                         mouse = pygame.mouse.get_pos()
                         # quit game button
                         if 660 <= mouse[0] <= 740 and 385 <= mouse[1] <= 415:
-                            self.connection.end_conn_client.end_conn()
+                            self.connection.end_conn_client.end_conn(username)
                             raise Exception("closing all")
 
                         
@@ -80,13 +81,18 @@ class Game:
 
  
 def main():
+    global username
     try: 
         ip = intro_screen.get_ip()
         connection = Connection(ip)
         data = intro_screen.main(connection.init_conn_client)
-        connection.chat_client.connect()
+        username = data[0]
+        connection.udp_client.set_username(username)
+        connection.chat_client.connect(username)        
         game = Game(data,connection)
         game.run()
+    except Exception as e:
+        print(e)
     finally:
         try:
             connection.close_con()

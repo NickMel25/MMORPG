@@ -6,7 +6,7 @@ from chat_server import Chat_server
 from end_conn_serv import End_conn_serv
 import encryption
 import atexit
-
+print(socket.gethostbyname(socket.gethostname()))
 ip = '0.0.0.0'
 port = 10001
 udp_server = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -51,6 +51,7 @@ def exists(username: str)-> bool:
 def append(data: str) -> None:
     global data_list
     
+    
     answers = data.split(":")
     temp_list = data_list
     # client_info = client_data.copy()
@@ -89,7 +90,9 @@ def send(ans,conn):
 
 def receive():
     msg, conn = udp_server.recvfrom(1024)
-    username = [k for k, v in client_list.items() if v['conn']['ip'] == conn[0]][0]
+    username, msg = msg.decode().split(" ")
+    if not username in client_list:
+        return False
     decrypted_msg = encryption.symmetric_decrypt_message(msg, client_list[username]['conn']['seckey'], client_list[username]['conn']['pad_char'])
     return decrypted_msg
 
@@ -115,13 +118,13 @@ def main():
     thread.start()
 
     while True:
-
         data = receive()
-        append(data)
-        print(data[1][0])
-        nearby = proximity(data.split(":")[0])
-        nearby = make_string(nearby)
-        iterate_users(nearby,data)
+        if data:
+            append(data)
+            print(data[1][0])
+            nearby = proximity(data.split(":")[0])
+            nearby = make_string(nearby)
+            iterate_users(nearby,data)
 
 
 def close_all():

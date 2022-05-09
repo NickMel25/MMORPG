@@ -1,4 +1,3 @@
-from more_itertools import pad_none
 import encryption
 import socket
 from settings import *
