@@ -85,6 +85,10 @@ class Game:
             ans = player.to_string()
             if player.attacking:
                 ans += ":" + f"{self.level.return_current_attack()}"
+            # else:
+            #     if player.is_magic:
+            #         ans += ":" + f"{self.level.magic_rect}"
+            #     else:
             ans += ":0"
 
             if 'idle' not in player.status:

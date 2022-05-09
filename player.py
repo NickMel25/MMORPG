@@ -4,11 +4,6 @@ from support import import_folder
 from entity import Entity
 
 # items
-num_water_potion = 0
-num_blood_potion = 0
-num_coin = 0
-num_bamboo = 0
-
 
 class Player(Entity):
     def __init__(self, pos, groups, obstacle_sprites, create_attack, destroy_attack, create_magic, username):
@@ -46,7 +41,7 @@ class Player(Entity):
         self.magic = list(magic_data.keys())[self.magic_index]
         self.can_switch_magic = True
         self.magic_switch_time = None
-        self.is_flame = False
+        self.is_magic = False
 
         # stats
         self.stats = {'health': 100, 'energy': 60, 'attack': 10, 'magic': 4, 'speed': 10}
@@ -56,6 +51,11 @@ class Player(Entity):
         self.energy = self.stats['energy'] * 0.8
         self.exp = 0
         self.speed = self.stats['speed']
+
+        self.num_water_potion = 0
+        self.num_blood_potion = 0
+        self.num_coin = 0
+        self.num_bamboo = 0
 
         # damage timer
         self.vulnerable = True
@@ -109,6 +109,7 @@ class Player(Entity):
 
                 # magic input
                 if keys[pygame.K_LCTRL]:
+                    self.is_magic = True
                     self.attacking = True
                     self.attack_time = pygame.time.get_ticks()
                     style = list(magic_data.keys())[self.magic_index]
@@ -226,4 +227,4 @@ class Player(Entity):
 
     def to_string(self):
         #          username   :direction(string):  is attacking:    location (int)    : hitbox      : frame index
-        return f"{self.username}:{self.status}:{self.attacking}:{self.rect.topleft}:{self.hitbox}:{self.frame_index}"
+        return f"{self.username}:{self.status}:{self.attacking}:{self.rect.topleft}:{self.hitbox}:{self.frame_index}:{self.health}"

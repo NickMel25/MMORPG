@@ -1,3 +1,5 @@
+import random
+
 import pygame
 from fake_entities import *
 import main
@@ -127,10 +129,6 @@ def print_monsters_around_player(data):
     if should_player_get_damage == 'True':
         level.damage_player(10)
 
-    # should_get_stuff = data[8]
-    # if (should_get_stuff == 'True'):
-    #     # get the frickin stuff
-
     the_player_it_goes_to = data[7][1:-1]
 
     display_surface = pygame.display.get_surface()
@@ -165,3 +163,25 @@ def print_monsters_around_player(data):
     temp_enemy_group.remove(current_enemy)
 
     pass
+
+
+def get_the_stuff():
+    random_number = random.randint(1, 4)
+    if random_number == 1:
+        player.num_coin += 1
+    elif random_number == 2:
+        player.num_water_potion += 1
+    elif random_number == 3:
+        player.num_blood_potion += 1
+    else:
+        player.num_bamboo += 1
+
+    random_number = random.randint(1, 4)
+    if random_number == 1:
+        player.num_coin += 1
+    elif random_number == 2:
+        player.num_water_potion += 1
+    elif random_number == 3:
+        player.num_blood_potion += 1
+    else:
+        player.num_bamboo += 1

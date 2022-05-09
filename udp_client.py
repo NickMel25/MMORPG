@@ -4,7 +4,7 @@ import threading
 from threading import Thread
 import client_performer
 
-server_IP = '10.100.102.10'
+server_IP = '192.168.115.198'
 ip = socket.gethostbyname(socket.gethostname())
 port = 12035
 server_port = 16985
@@ -20,14 +20,13 @@ monster_udp_client.bind((ip, 54321))
 
 def recv_monster_thread_handler():
     while True:
-        try:
-            monster_data = recieve_for_monster()
-        except Exception as e:
-            print(e)
-
-        answer = monster_data.split(":")
-        print(answer)
-        client_performer.print_monsters_around_player(answer)
+        monster_data = recieve_for_monster()
+        if (monster_data == "get_stuff"):
+            client_performer.get_the_stuff()
+        else:
+            answer = monster_data.split(":")
+            print(answer)
+            client_performer.print_monsters_around_player(answer)
 
 
 def start_monster_thread(player, level):

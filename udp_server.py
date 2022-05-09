@@ -23,7 +23,7 @@ print(ip)
 enemies_list = []
 on_enemies_screen_players = []
 moving_monsters = []
-monster_count = 10
+monster_count = 100
 
 layouts = {
     'floor': import_csv_layout('map/map_Floor.csv'),
@@ -142,12 +142,14 @@ def check_player_enemy_collision(monster_rect, player_rect, counter, player):
         enemies_list[counter]['should_player_get_damage'] = True
 
 
-def check_death(counter):
+def check_death(counter, player):
     global enemies_list
 
     if enemies_list[counter]['health'] <= 0:
 
-        enemies_list[counter]['should_get_stuff'] = True
+        ans = "get_stuff"
+
+        send_for_monster(ans, (client_dict[player]["connection"][0], 54321))
 
         xEnemy, yEnemy = get_good_placing()
 
@@ -172,7 +174,7 @@ def enemy_player_proximity():
 
             for player in client_dict:
 
-                check_death(counter)
+                check_death(counter, player)
 
                 player_location = (client_dict[player]["location"][0], client_dict[player]["location"][1])
                 monster_location = (enemies_list[counter]['location'][0], enemies_list[counter]['location'][1])
@@ -189,7 +191,7 @@ def enemy_player_proximity():
 
                 weapon_rect = client_dict[player]["weapon"]
                 monster_rect = pygame.Rect(enemies_list[counter]['location'][0], enemies_list[counter]['location'][1],64, 64)
-                check_player_enemy_collision(monster_rect, client_dict[player]["hitbox"], counter, player)
+                # check_player_enemy_collision(monster_rect, client_dict[player]["hitbox"], counter, player)
 
                 if distance <= monster_data[enemies_list[counter]['type']]['attack_radius'] and client_dict[player]["attacking"] == 'True':
                     print("attacking me!!!!")
@@ -209,9 +211,8 @@ def make_monster_string():
     responses_array = []
     counter = 0
     while counter < monster_count:
-        response = f"{enemies_list[counter]['type']}:{enemies_list[counter]['health']}:{enemies_list[counter]['moving']}:{enemies_list[counter]['location']}:{enemies_list[counter]['id']}:{enemies_list[counter]['is_attacking']}:{enemies_list[counter]['should_player_get_damage']}:{enemies_list[counter]['the_player_it_goes_to']}:{enemies_list[counter]['should_get_stuff']}"
+        response = f"{enemies_list[counter]['type']}:{enemies_list[counter]['health']}:{enemies_list[counter]['moving']}:{enemies_list[counter]['location']}:{enemies_list[counter]['id']}:{enemies_list[counter]['is_attacking']}:{enemies_list[counter]['should_player_get_damage']}:{enemies_list[counter]['the_player_it_goes_to']}"
         enemies_list[counter]['should_player_get_damage'] = False
-        enemies_list[counter]['should_get_stuff'] = False
         responses_array.append(response)
         send_monsters_to_users(responses_array, enemies_list[counter]['close_players'])
         counter += 1
@@ -276,7 +277,8 @@ def append(data):
     info_list["location"] = temp
     info_list["hitbox"] = answers[4]
     info_list["frame"] = int(floor(float(answers[5])))
-    info_list["weapon"] = answers[6]
+    info_list["health"] = answers[6]
+    info_list["weapon"] = answers[7]
     info_list["last_attacked"] = 0
     info_list["connection"] = data[1]
     print(answers)

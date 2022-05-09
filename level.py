@@ -13,11 +13,11 @@ from weapon import Weapon
 from ui import UI
 from enemy import Enemy
 from particles import AnimationPlayer
+from particles import ParticleEffect
 from magic import MagicPlayer
 from upgrade import Upgrade
 import intro_screen
 # import globals
-from player import num_water_potion, num_blood_potion, num_coin, num_bamboo
 
 
 class Level:
@@ -62,7 +62,7 @@ class Level:
         self.inventory = pygame.image.load('graphics/test/inventory.png').convert_alpha()
 
         # enemy ai thingies
-        self.moving_enemy_List = []
+        self.magic_rect = None
 
     def return_player(self):
         return self.player
@@ -131,7 +131,7 @@ class Level:
 
         if style == 'flame':
             self.magic_player.flame(self.player, cost, [self.visible_sprites, self.attack_sprites])
-            Player.is_flame = True
+            # self.magic_rect = self.ParticleEffect.rect
 
         if style == 'crossbow':
             self.magic_player.arrow(self.player, [self.visible_sprites, self.attack_sprites])
@@ -178,22 +178,22 @@ class Level:
     # item drops
     def add_water_potion_drop(self, inventory_rect):
         font = pygame.font.SysFont(WATER_COLOR, UI_FONT_SIZE)
-        counter = font.render(str(player.num_water_potion), 1, TEXT_COLOR)
+        counter = font.render(str(self.player.num_water_potion), 1, TEXT_COLOR)
         self.display_surface.blit(counter, (inventory_rect.x + 9, inventory_rect.y + 8))
 
     def add_blood_potion_drop(self, inventory_rect):
         font = pygame.font.SysFont(WATER_COLOR, UI_FONT_SIZE)
-        counter = font.render(str(player.num_blood_potion), 1, TEXT_COLOR)
+        counter = font.render(str(self.player.num_blood_potion), 1, TEXT_COLOR)
         self.display_surface.blit(counter, (inventory_rect.x + 73, inventory_rect.y + 8))
 
     def add_coin_drop(self, inventory_rect):
         font = pygame.font.SysFont(WATER_COLOR, UI_FONT_SIZE)
-        counter = font.render(str(player.num_coin), 1, TEXT_COLOR)
+        counter = font.render(str(self.player.num_coin), 1, TEXT_COLOR)
         self.display_surface.blit(counter, (inventory_rect.x + 137, inventory_rect.y + 8))
 
     def add_bamboo_drop(self, inventory_rect):
         font = pygame.font.SysFont(WATER_COLOR, UI_FONT_SIZE)
-        counter = font.render(str(player.num_bamboo), 1, TEXT_COLOR)
+        counter = font.render(str(self.player.num_bamboo), 1, TEXT_COLOR)
         self.display_surface.blit(counter, (inventory_rect.x + 201, inventory_rect.y + 8))
 
     def run(self):

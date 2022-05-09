@@ -5,7 +5,6 @@ from settings import *
 from entity import Entity
 from support import *
 import random
-from player import num_water_potion, num_blood_potion, num_coin, num_bamboo
 
 
 class Enemy(Entity):
