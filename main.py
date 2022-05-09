@@ -36,7 +36,10 @@ class Game:
         chat_rect.thread_start()
         self.connection.udp_client.start_monster_thread(player,self.level)
         while True:
-            
+            if player.game_over:
+                    self.connection.end_conn_client.end_conn(username)
+                    exit_all()
+         
             for event in pygame.event.get():
                 if event.type == pygame.MOUSEBUTTONDOWN and boxes.collides(chat_rect.input_rect,event):
                     player.chat_paused = True
@@ -44,7 +47,7 @@ class Game:
                     player.chat_paused = False
                 if event.type == pygame.QUIT:
                     self.connection.end_conn_client.end_conn(username)
-                    raise Exception("closing all")
+                    exit_all()
 
                 if event.type == pygame.KEYDOWN:
                     if player.chat_paused == True:
@@ -57,17 +60,6 @@ class Game:
 
                         elif not (event.type == pygame.K_DOWN and event.type == pygame.K_UP and event.type == pygame.K_LEFT and event.type == pygame.K_RIGHT) and player.chat_paused == True:
                             chat_rect.insert_text[0] += event.unicode
-
-
-                    elif event.key == pygame.K_m:
-                            self.level.toggle_menu()
-                if event.type == pygame.MOUSEBUTTONDOWN:
-                    if self.level.game_over:
-                        mouse = pygame.mouse.get_pos()
-                        # quit game button
-                        if 660 <= mouse[0] <= 740 and 385 <= mouse[1] <= 415:
-                            self.connection.end_conn_client.end_conn(username)
-                            raise Exception("closing all")
 
                         
 
@@ -85,6 +77,7 @@ class Game:
 
             if player.is_magic:
                 ans += ":" + f"{player.magic_rect}"
+                player.is_magic = False
             else:
                 if player.attacking:
                     ans += ":" + f"{self.level.return_current_attack()}"
@@ -93,6 +86,14 @@ class Game:
 
             if 'idle' not in player.status:
                 self.connection.udp_client.send(ans)
+
+def exit_all():
+    try:
+        connection.close_con()
+    except UnboundLocalError:
+        pass
+    pygame.quit()
+    sys.exit()
 
 def main():
     global username
@@ -105,9 +106,7 @@ def main():
         connection.chat_client.connect(username)        
         game = Game(data,connection)
         game.run()
-    except Exception as e:
-        print(e)
-    finally:
+    except:
         try:
             connection.close_con()
         except UnboundLocalError:

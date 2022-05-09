@@ -31,7 +31,7 @@ class Level:
         # get the display surface
         self.display_surface = pygame.display.get_surface()
         self.game_paused = False
-        self.game_over = False
+
 
         image = pygame.image.load('graphics/player/down_idle/idle_down.png')
         pygame.display.update()
@@ -48,7 +48,8 @@ class Level:
         # sprite setup
         self.create_map(data)
 
-
+        self.weapon_rect = pygame.rect.Rect((0,0),(0,0))
+        self.last_item_time = 0
         # user interface
         self.ui = UI()
         self.upgrade = Upgrade(self.player)
@@ -134,9 +135,10 @@ class Level:
 
     def create_attack(self):
         self.current_attack = Weapon(self.player, [self.visible_sprites, self.attack_sprites])
+        self.weapon_rect = self.current_attack.rect
 
     def return_current_attack(self):
-        return self.current_attack.rect
+        return self.weapon_rect
 
     def create_magic(self, style, strength, cost):
         if style == 'heal':
@@ -214,6 +216,37 @@ class Level:
         self.display_surface.blit(counter, (inventory_rect.x+201, inventory_rect.y+8))
 
 
+    def use_water_potion(self):
+        current_time = pygame.time.get_ticks()
+        keys = pygame.key.get_pressed()
+        if keys[pygame.K_1]:
+            if current_time - self.last_item_time > 3000:
+                if self.player.num_water_potion > 0:
+                    self.player.num_water_potion -= 1
+                    self.player.energy += 10
+                    self.last_item_time = current_time
+
+    def use_blood_potion(self):
+        current_time = pygame.time.get_ticks()
+        keys = pygame.key.get_pressed()
+        if keys[pygame.K_2]:
+            if current_time - self.last_item_time > 3000:
+                if self.player.num_blood_potion > 0:
+                    self.player.num_blood_potion -= 1
+                    self.player.health += 10
+                    self.last_item_time = current_time
+
+    def use_coin(self):
+        current_time = pygame.time.get_ticks()
+        keys = pygame.key.get_pressed()
+        if keys[pygame.K_3]:
+            if current_time - self.last_item_time > 3000:
+                if self.player.num_coin > 0:
+                    self.player.num_coin -= 1
+                    self.player.exp += 1
+                    self.last_item_time = current_time
+
+
     def run(self):
         self.visible_sprites.custom_draw(self.player)
         self.ui.display(self.player)
@@ -229,27 +262,18 @@ class Level:
         self.add_water_potion_drop(inventory_rect)
         self.add_blood_potion_drop(inventory_rect)
 
-
+        self.use_coin()
+        self.use_blood_potion()
+        self.use_water_potion()
+        
         if self.player.health <= 0:
-            self.game_over = True
+            self.player.game_over = True
 
-            # show image "game over"
-            bg_rect = pygame.Rect(0, 0, 1280, 720)
-            gameover_surf = self.gameover
-            gameover_rect = gameover_surf.get_rect(center=bg_rect.center)
-            self.display_surface.blit(gameover_surf, gameover_rect)
-
-            # draw button to restart game
-            pygame.draw.rect(self.display_surface, UI_BG_COLOR, [540, 385, 80, 30])
-            smallfont = pygame.font.SysFont(UI_FONT, 16)
-            text = smallfont.render('RESTART', True, TEXT_COLOR)
-            self.display_surface.blit(text, (552.5, 395))
-
-            # draw quit button
-            pygame.draw.rect(self.display_surface, UI_BG_COLOR, [660, 385, 80, 30])
-            smallfont = pygame.font.SysFont(UI_FONT, 16)
-            text = smallfont.render('QUIT', True, TEXT_COLOR)
-            self.display_surface.blit(text, (685, 395))
+        if self.game_paused:
+            self.upgrade.display()
+        else:
+            self.visible_sprites.update()
+            self.visible_sprites.enemy_update(self.player)
 
         if self.game_paused:
             self.upgrade.display()
@@ -257,9 +281,7 @@ class Level:
             self.visible_sprites.update()
 
             self.player_attack_logic()
-
-    def restart_location(self):
-        self.player = ''
+  
 
 
 class YSortCameraGroup(pygame.sprite.Group):

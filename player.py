@@ -64,6 +64,7 @@ class Player(Entity):
         self.exp = 0
         self.speed = self.stats['speed']
 
+        self.game_over = False
 
         # damage timer
         self.vulnerable = True
@@ -87,7 +88,7 @@ class Player(Entity):
 
     def input(self):
         if not self.attacking:
-            if not self.chat_paused:
+            if not self.chat_paused or not self.game_over:
                 keys = pygame.key.get_pressed()
 
                 # movement input
@@ -117,10 +118,11 @@ class Player(Entity):
 
                     if self.weapon_index == 2:
                         style = 'crossbow'
+                        self.is_magic = True
                         strength = 60
                         cost = 0
                         self.create_magic(style, strength, cost)
-
+                
                 # magic input
                 if keys[pygame.K_LCTRL]:
 

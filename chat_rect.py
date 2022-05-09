@@ -23,7 +23,6 @@ class Chat:
         for i in range(len(self.chat_log)-1):
             self.chat_log[i] = self.chat_log[i+1]
         self.chat_log[len(self.chat_log)-1] = msg
-        print(self.chat_log[len(self.chat_log)-1])
         return
 
      
@@ -56,7 +55,6 @@ class Chat:
                     text[0] = text[0][:-1]
                     text_surface = self.font.render(text[0], True, (255,255,255))
                 self.shift_append(text[0])
-                print(temp)
                 text[0] = temp[::-1]
                 if temp == '':
                     break

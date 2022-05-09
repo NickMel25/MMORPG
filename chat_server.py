@@ -53,5 +53,5 @@ class Chat_server:
             thread = threading.Thread(target=self.thread_handler,args=[conn,addr])
             thread.daemon = True
             thread.start()
-            print("created new chat thread")
+    
 

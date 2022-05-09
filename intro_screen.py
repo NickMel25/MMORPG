@@ -107,7 +107,7 @@ def key_input(input_rect,rect_name):
                 else:
                     pass_text = text
                 text_surface = base_font.render(pass_text, True, (255, 255, 255))
-                print(text_surface.get_width())
+
                 
                 
                 if text_surface.get_width() < input_rect.w:
@@ -144,7 +144,7 @@ def get_ip():
 
 
                 text_surface = base_font.render(text, True, (255, 255, 255))
-                print(text_surface.get_width())
+  
                 
                 
                 if text_surface.get_width() < ip_box.w:
@@ -164,7 +164,7 @@ def main(init_conn_client):
     global username_text, password_text, confirmpassword_text,mode
     rect_list = display_screen(mode)
 
-    print(type(pygame.surface))
+
     pending = None
     pass_text = ['',]
     while True:
@@ -173,8 +173,6 @@ def main(init_conn_client):
             if pending != None:
                 event = pending
                 pending = None
-            if event.type == pygame.MOUSEBUTTONDOWN:
-                print("lolusuck")
             for rect in rect_list:
                 if boxes.collides(rect_list[rect], event):
                     if rect == "username":

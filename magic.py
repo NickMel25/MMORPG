@@ -35,10 +35,8 @@ class MagicPlayer:
             else:
                 direction = pygame.math.Vector2(0, 1)
 
-
-            first_offset = (0, 0)
-            second_offset = (0, 0)
-
+            width = 0
+            height = 0
             for i in range(1, 6):
                 if direction.x:  # horizontal
                     offset_x = (direction.x * i) * TILESIZE
@@ -51,31 +49,35 @@ class MagicPlayer:
                     y = player.rect.centery + offset_y + randint(-TILESIZE // 3, TILESIZE // 3)
                     self.animation_player.create_particles('flame', (x, y), groups)
 
-
                 if i == 1:
                     if player.status.split('_')[0] == 'right':
-                        firstoffset = (x, y)
+                        width = 30 * 9
+                        height = 48
                     elif player.status.split('_')[0] == 'left':
-                        firstoffset = (x + 30, y)
+                        width = 30 * 9
+                        height = 48
                     elif player.status.split('_')[0] == 'up':
-                        first_offset = (x, y - 48)
+                        width = 48
+                        height = 30 * 9
                     else:
-                        firstoffset = (x, y)
-                elif i == 6:
+                        width = 48
+                        height = 30 * 9
+                elif i == 5:
                     if player.status.split('_')[0] == 'right':
-                        second_offset = (x + 30 * 6, y - 48)
+                        width = 30 * 9
+                        height = 48
                     elif player.status.split('_')[0] == 'left':
-                        second_offset = (x - 30 * 6, y - 48)
+                        width = 30 * 9
+                        height = 48
                     elif player.status.split('_')[0] == 'up':
-                        second_offset = (x + 30, y + 486)
+                        width = 48
+                        height = 30 * 9
                     else:
-                        second_offset = (x + 30, y - 486)
+                        width = 48
+                        height = 30 * 9
 
-                x = abs(second_offset[0] - first_offset[0])
-                y = abs(second_offset[1] - first_offset[1])
-
-                player.magic_rect = pygame.rect.Rect((x, y), (30, 48))
-
+            player.magic_rect = pygame.rect.Rect(player.rect.topleft, (width, height))
+        # player.is_magic = False
 
 
     def arrow(self, player, groups):
@@ -88,7 +90,10 @@ class MagicPlayer:
         else:
             direction = pygame.math.Vector2(0, 1)
 
+        width = 0
+        height = 0
         for i in range(1, 6):
+
             if direction.x:  # horizontal
                 offset_x = (direction.x * i) * TILESIZE
                 x = player.rect.centerx + offset_x
@@ -106,3 +111,33 @@ class MagicPlayer:
                     self.animation_player.create_particles('arrow_up', (x, y), groups)
                 else:
                     self.animation_player.create_particles('arrow_down', (x, y), groups)
+
+            if i == 1:
+                if player.status.split('_')[0] == 'right':
+                    width = 32 * 9
+                    height = 44
+                elif player.status.split('_')[0] == 'left':
+                    width = 32 * 9
+                    height = 44
+                elif player.status.split('_')[0] == 'up':
+                    width = 44
+                    height = 32 * 9
+                else:
+                    width = 44
+                    height = 32 * 9
+            if i == 5:
+                if player.status.split('_')[0] == 'right':
+                    width = 32 * 9
+                    height = 44
+                elif player.status.split('_')[0] == 'left':
+                    width = 32 * 9
+                    height = 44
+                elif player.status.split('_')[0] == 'up':
+                    width = 44
+                    height = 32 * 9
+                else:
+                    width = 44
+                    height = 32 * 9
+
+        player.magic_rect = pygame.rect.Rect(player.rect.topleft, (width, height))
+    

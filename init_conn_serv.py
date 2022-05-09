@@ -36,7 +36,7 @@ class Init_conn_serv:
         try:
             # keys exchange and setup
             # conn.sendall(str.encode('blablabla'))
-            # print('sent 1')
+
             self.client_public_key = RSA.importKey(conn.recv(1024*4), passphrase=None) 
             conn.sendall(self.public_key.publickey().exportKey())
             secret_key = encryption.symmetric_generate_key()
@@ -45,13 +45,9 @@ class Init_conn_serv:
             pad_char = chr(randrange(1,26)+96)
             encrypted_pad_char = encryption.assymetric_encrypt_message(pad_char.encode(),self.client_public_key)
             conn.sendall(encrypted_pad_char)
-            print("pad char sent")
-            conn.sendall(encrypted_pad_char)
-            print("second try")
+
             confirmation_message = conn.recv(1024*4)
             confirmation_message = encryption.symmetric_decrypt_message(confirmation_message,secret_key,pad_char)
-            print(confirmation_message)
-
             # login / signup validity
             redo = True
             while redo:
@@ -62,7 +58,6 @@ class Init_conn_serv:
                     result = db_access.login(username,password)
                 if mode == 'signup':
                     result = db_access.signup(username,password,confirmpassword)
-                print(result)
 
                 if result == 'Signup completed' or result == 'Correct password':
                     user_data = db_access.load(username)
@@ -95,7 +90,7 @@ class Init_conn_serv:
             self.client_list[username]['game']['coins'] = user_data[10]
             conn.close()
         except ValueError as e:
-            print(e)
+
             conn.close()
             return
         except ConnectionResetError as e:
@@ -110,7 +105,7 @@ class Init_conn_serv:
             thread = threading.Thread(target=self.thread_handler,args=[conn,addr])
             thread.daemon = True
             thread.start()
-            print("created new init thread")
+
 
 def mains():
     init_conn = Init_conn_serv({},{})

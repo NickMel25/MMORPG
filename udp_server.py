@@ -38,7 +38,7 @@ client_list = {}
 enemies_list = []
 on_enemies_screen_players = []
 moving_monsters = []
-monster_count = 100
+monster_count = 50
 
 
 layouts = {
@@ -152,22 +152,23 @@ def get_damage(counter, monster_rect, weapon_rect):
 
     if collide and time_passed >= 1:
         enemies_list[counter]['last_attacked'] = pygame.time.get_ticks()
-        enemies_list[counter]['health'] -= 10
+        enemies_list[counter]['health'] -= 50
 
 
 def check_player_enemy_collision(monster_rect, player_rect, counter, player):
     shit = player_rect[6:-2]
-    arr = shit.split(', ')
-    player_rect = pygame.Rect(int(arr[0]), int(arr[1]), int(arr[2]), int(arr[3]))
+    if shit != '':
+        arr = shit.split(', ')
+        player_rect = pygame.Rect(int(arr[0]), int(arr[1]), int(arr[2]), int(arr[3]))
 
-    current_time = pygame.time.get_ticks()
-    time_passed = (current_time - client_list[player]['game']["last_attacked"])
+        current_time = pygame.time.get_ticks()
+        time_passed = (current_time - client_list[player]['game']["last_attacked"])
 
-    collide = pygame.Rect.colliderect(monster_rect, player_rect)
+        collide = pygame.Rect.colliderect(monster_rect, player_rect)
 
-    if collide and time_passed >= 500:
-        client_list[player]['game']["last_attacked"] = pygame.time.get_ticks()
-        enemies_list[counter]['should_player_get_damage'] = True
+        if collide and time_passed >= 500:
+            client_list[player]['game']["last_attacked"] = pygame.time.get_ticks()
+            enemies_list[counter]['should_player_get_damage'] = True
 
 
 def check_death(counter, player):
@@ -177,7 +178,7 @@ def check_death(counter, player):
 
         ans = "get_stuff"
 
-        send_for_monster(ans, (client_list[player]["conn"]['ip'], 32456))
+        send_for_monster(ans, (client_list[player]["conn"]['ip'], 32456),client_list[player]["game"]['username'])
 
         xEnemy, yEnemy = get_good_placing()
 
@@ -219,10 +220,10 @@ def enemy_player_proximity():
 
                 weapon_rect = client_list[player]['game']["weapon"]
                 monster_rect = pygame.Rect(enemies_list[counter]['location'][0], enemies_list[counter]['location'][1],64, 64)
-                # check_player_enemy_collision(monster_rect, client_dict[player]["hitbox"], counter, player)
+                check_player_enemy_collision(monster_rect, client_list[player]['game']["hitbox"], counter, player)
 
-                if distance <= monster_data[enemies_list[counter]['type']]['attack_radius'] and client_list[player]['game']["attacking"] == True and client_list[player]['game']["weapon"] != '0':
-                    print("attacking me!!!!")
+                if distance <= monster_data[enemies_list[counter]['type']]['attack_radius'] and client_list[player]['game']["attacking"] == True and client_list[player]['game']["weapon"] != '0' and client_list[player]['game']["hitbox"] != '':
+
                     enemies_list[counter]['is_attacking'] = True
                     get_damage(counter, monster_rect, weapon_rect)
 
@@ -269,13 +270,13 @@ def send_for_monster(ans, conn,username):
 
 def proximity(username: str):
     in_proximity = {}
-    print(client_list[username]['game']["location"])
+
     for cli in client_list:
         if not (cli == username):
             if  client_list[username]['game']['location'][0]-1250 < client_list[cli]['game']["location"][0] <client_list[username]['game']['location'][0]+1250 \
             and client_list[username]['game']['location'][1]-750 < client_list[cli]['game']["location"][1] <client_list[username]['game']['location'][1]+750:
                 in_proximity[cli] = client_list[cli]
-                print("in proximity")
+
     return in_proximity
 
 
@@ -368,7 +369,6 @@ def main():
         data = receive()
         if data:
             append(data)
-            print(data[1][0])
             nearby = proximity(data.split(":")[0])
             nearby = make_string(nearby)
             iterate_users(nearby,data)

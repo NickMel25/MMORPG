@@ -37,9 +37,10 @@ class Udp_client:
                 client_performer.get_the_stuff()
             else:
                 answer = monster_data.split(":")
-                print(answer)
-                client_performer.print_monsters_around_player(answer)
-    
+                try:
+                    client_performer.print_monsters_around_player(answer)
+                except:
+                    pass
     def start_monster_thread(self,player, level):
         # arr = {"player" : player,
         #  "level" : level}
@@ -72,9 +73,10 @@ class Udp_client:
             data = self.receive()
             if data:
                 data = data
-                print(data)
-                client_performer.display_players(data,player,level)
-
+                try:
+                    client_performer.display_players(data,player,level)
+                except:
+                    pass
 
     def receive(self):
         try:

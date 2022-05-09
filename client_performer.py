@@ -19,7 +19,6 @@ offset = pygame.math.Vector2()
 
 
 def append(data):
-    print(data)
     temp = ''
     answers = data.split(":")
     info_list = {}

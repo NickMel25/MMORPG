@@ -22,7 +22,7 @@ class End_conn_client:
         while result != "Completed successfully":
             result = client_connection.recv(1024*4)
             result = encryption.symmetric_decrypt_message(result,self.secret_key,self.pad_char)
-            print(result)
+
         client_connection.close()
         return result
 
