@@ -41,6 +41,7 @@ class Player(Entity):
         self.magic = list(magic_data.keys())[self.magic_index]
         self.can_switch_magic = True
         self.magic_switch_time = None
+        self.magic_rect = pygame.rect.Rect((0, 0), (0, 0))
         self.is_magic = False
 
         # stats
@@ -71,6 +72,9 @@ class Player(Entity):
         for animation in self.animations.keys():
             full_path = character_path + animation
             self.animations[animation] = import_folder(full_path)
+
+    def return_magic(self):
+        return self.magic_rect
 
     def input(self):
         if not self.attacking:

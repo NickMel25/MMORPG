@@ -71,10 +71,6 @@ class Game:
                             pygame.quit()
                             sys.exit()
 
-                        # quit game button
-                        if 660 <= mouse[0] <= 740 and 385 <= mouse[1] <= 415:
-                            pygame.quit()
-                            sys.exit()
 
             self.screen.fill(WATER_COLOR)
             self.level.run()
@@ -83,13 +79,14 @@ class Game:
             pygame.display.update()
             self.clock.tick(FPS)
             ans = player.to_string()
-            if player.attacking:
-                ans += ":" + f"{self.level.return_current_attack()}"
-            # else:
-            #     if player.is_magic:
-            #         ans += ":" + f"{self.level.magic_rect}"
-            #     else:
-            ans += ":0"
+
+            if player.is_magic:
+                ans += ":" + f"{player.magic_rect}"
+            else:
+                if player.attacking:
+                    ans += ":" + f"{self.level.return_current_attack()}"
+                else:
+                    ans += ":0"
 
             if 'idle' not in player.status:
                 udp_client.send(ans)

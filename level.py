@@ -61,9 +61,6 @@ class Level:
         # inventory image
         self.inventory = pygame.image.load('graphics/test/inventory.png').convert_alpha()
 
-        # enemy ai thingies
-        self.magic_rect = None
-
     def return_player(self):
         return self.player
 
@@ -131,7 +128,6 @@ class Level:
 
         if style == 'flame':
             self.magic_player.flame(self.player, cost, [self.visible_sprites, self.attack_sprites])
-            # self.magic_rect = self.ParticleEffect.rect
 
         if style == 'crossbow':
             self.magic_player.arrow(self.player, [self.visible_sprites, self.attack_sprites])

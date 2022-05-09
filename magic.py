@@ -32,6 +32,8 @@ class MagicPlayer:
             else:
                 direction = pygame.math.Vector2(0, 1)
 
+            first_offset = (0, 0)
+            second_offset = (0, 0)
             for i in range(1, 6):
                 if direction.x:  # horizontal
                     offset_x = (direction.x * i) * TILESIZE
@@ -43,6 +45,30 @@ class MagicPlayer:
                     x = player.rect.centerx + randint(-TILESIZE // 3, TILESIZE // 3)
                     y = player.rect.centery + offset_y + randint(-TILESIZE // 3, TILESIZE // 3)
                     self.animation_player.create_particles('flame', (x, y), groups)
+                if i == 1:
+                    if player.status.split('_')[0] == 'right':
+                        firstoffset = (x, y)
+                    elif player.status.split('_')[0] == 'left':
+                        firstoffset = (x + 30, y)
+                    elif player.status.split('_')[0] == 'up':
+                        first_offset = (x, y - 48)
+                    else:
+                        firstoffset = (x, y)
+                elif i == 6:
+                    if player.status.split('_')[0] == 'right':
+                        second_offset = (x + 30 * 6, y - 48)
+                    elif player.status.split('_')[0] == 'left':
+                        second_offset = (x - 30 * 6, y - 48)
+                    elif player.status.split('_')[0] == 'up':
+                        second_offset = (x + 30, y + 486)
+                    else:
+                        second_offset = (x + 30, y - 486)
+
+                x = abs(second_offset[0] - first_offset[0])
+                y = abs(second_offset[1] - first_offset[1])
+
+                player.magic_rect = pygame.rect.Rect((x, y), (30, 48))
+
 
     def arrow(self, player, groups):
         if player.status.split('_')[0] == 'right':

@@ -4,6 +4,7 @@ import socket
 import random
 import pygame
 import threading
+import chat_server
 
 # ============================================================================================================================================
 # -----------------------------------------------------------------CONSTANTS--------------------------------------------------------------------
@@ -255,8 +256,7 @@ def proximity(username):
 def make_string(nearby):
     for name in nearby:
         user = nearby[name]
-        nearby[
-            name] = f'{user["username"]}:{user["direction"]}:{user["attacking"]}:{user["location"]}:{user["hitbox"]}:{user["frame"]}'
+        nearby[name] = f'{user["username"]}:{user["direction"]}:{user["attacking"]}:{user["location"]}:{user["hitbox"]}:{user["frame"]}'
     return nearby
 
 
@@ -299,6 +299,10 @@ def receive():
 
 
 def main():
+    # thread = threading.Thread(target= chat_server.main)
+    # thread.daemon = True
+    # thread.start()
+
     create_enemies_place()
     monster_thread()
     while True:

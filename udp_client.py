@@ -4,7 +4,7 @@ import threading
 from threading import Thread
 import client_performer
 
-server_IP = '192.168.115.198'
+server_IP = '192.168.43.24'
 ip = socket.gethostbyname(socket.gethostname())
 port = 12035
 server_port = 16985
