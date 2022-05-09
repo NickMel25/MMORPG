@@ -23,6 +23,8 @@ ip = '0.0.0.0'
 port = 10001
 # port = 16985
 udp_server = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+udp_server.bind((ip,port))
+
 init_conn_serv = None
 chat_server = None
 end_conn_serv = None
@@ -247,7 +249,7 @@ def make_monster_string():
 def send_monsters_to_users(responses_array, pipol):
     for response in responses_array:
         for i in range(len(pipol)):
-            send_for_monster(response, (pipol[i]["conn"]['ip'], 32456))
+            send_for_monster(response, (pipol[i]["conn"]['ip'], 32456),pipol[i]['game']['username'])
 
 
 def monster_thread():
@@ -255,8 +257,9 @@ def monster_thread():
     thread_for_monsters_location.start()
 
 
-def send_for_monster(ans, conn):
-    udp_server.sendto(str.encode(ans), (conn[0], conn[1]))
+def send_for_monster(ans, conn,username):
+    encrypted_ans = encryption.symmetric_encrypt_message(ans,client_list[username]["conn"]["seckey"],client_list[username]["conn"]["pad_char"])
+    udp_server.sendto(encrypted_ans, (conn[0], conn[1]))
 
 
 # ============================================================================================================================================
@@ -329,18 +332,21 @@ def send(ans,conn):
 
 
 def receive():
-    msg, conn = udp_server.recvfrom(1024)
-    username, msg = msg.decode().split(" ")
-    if not username in client_list:
+    try:
+        msg, conn = udp_server.recvfrom(1024)
+        username, msg = msg.decode().split(" ")
+        if not username in client_list:
+            return False
+        decrypted_msg = encryption.symmetric_decrypt_message(msg, client_list[username]['conn']['seckey'], client_list[username]['conn']['pad_char'])
+        return decrypted_msg
+    except:
         return False
-    decrypted_msg = encryption.symmetric_decrypt_message(msg, client_list[username]['conn']['seckey'], client_list[username]['conn']['pad_char'])
-    return decrypted_msg
 
 
 def main():
     global udp_server, init_conn_serv, end_conn_serv, chat_server, client_list, client_data
     
-    udp_server.bind((ip,port))
+
     
     init_conn_serv = Init_conn_serv(client_list,client_data)
     thread = threading.Thread(target=init_conn_serv.main)

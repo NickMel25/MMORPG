@@ -65,11 +65,6 @@ class Player(Entity):
         self.speed = self.stats['speed']
 
 
-        self.num_water_potion = 0
-        self.num_blood_potion = 0
-        self.num_coin = 0
-        self.num_bamboo = 0
-
         # damage timer
         self.vulnerable = True
         self.hurt_time = 0

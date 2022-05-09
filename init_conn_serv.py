@@ -77,7 +77,9 @@ class Init_conn_serv:
                 conn.sendall(encrypted_result)
 
             username = user_data[0]
+
             self.client_list[username] = self.client_data.copy()
+            self.client_list[username]['game']['username'] = username
             self.client_list[username]['conn']['seckey'] = secret_key 
             self.client_list[username]['conn']['ip'] = addr[0]
             self.client_list[username]['conn']['port'] = addr[1]

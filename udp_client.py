@@ -20,7 +20,7 @@ class Udp_client:
         self.monster_port = 32456
         self.monster_udp_client = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         self.monster_udp_client.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-        self.monster_udp_client.bind((self.ip, self.monster_port))
+        self.monster_udp_client.bind((socket.gethostbyname(socket.gethostname()), 32456))
 
         self.secret_key = secret_key
         self.private_client_key = private_client_key
@@ -44,14 +44,14 @@ class Udp_client:
         # arr = {"player" : player,
         #  "level" : level}
         client_performer.get_player(player, level)
-        players_nearby_thread = self.threading.Thread(target=self.recv_monster_thread_handler, daemon=True)
+        players_nearby_thread = Thread(target=self.recv_monster_thread_handler, daemon=True)
         players_nearby_thread.start()
 
 
     def recieve_for_monster(self):
         msg, conn = self.monster_udp_client.recvfrom(1024)
-        msg = msg.decode()
-        return msg
+        decrypted_msg = encryption.symmetric_decrypt_message(msg,self.secret_key,self.pad_char)
+        return decrypted_msg
 
 
 
@@ -70,15 +70,19 @@ class Udp_client:
     def recv_thread_handler(self,player,level):
         while True:
             data = self.receive()
-            data = data
-            print(data)
-            client_performer.display_players(data,player,level)
+            if data:
+                data = data
+                print(data)
+                client_performer.display_players(data,player,level)
 
 
     def receive(self):
+        try:
             msg ,conn = self.udp_client.recvfrom(1024)
             decrypted_msg = encryption.symmetric_decrypt_message(msg,self.secret_key,self.pad_char)
             return decrypted_msg
+        except:
+            return False
 
     def send(self, msg : str):
         encrypted_msg = encryption.symmetric_encrypt_message(msg,self.secret_key,self.pad_char)

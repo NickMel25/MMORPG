@@ -1,3 +1,5 @@
+from multiprocessing import connection
+from typing import final
 import pygame, sys
 from settings import *
 from level import Level
@@ -6,6 +8,7 @@ from chat_rect import Chat
 import boxes
 import intro_screen
 from connection import Connection
+import threading
 
 username = ''
 class Game:
@@ -31,7 +34,7 @@ class Game:
         self.connection.udp_client.start_thread(player,self.level)
         chat_rect = Chat(self.screen,player.username,self.connection.chat_client)
         chat_rect.thread_start()
-
+        self.connection.udp_client.start_monster_thread(player,self.level)
         while True:
             
             for event in pygame.event.get():
@@ -93,22 +96,24 @@ class Game:
 
 def main():
     global username
-    ip = intro_screen.get_ip()
-    connection = Connection(ip)
-    data = intro_screen.main(connection.init_conn_client)
-    username = data[0]
-    connection.udp_client.set_username(username)
-    connection.chat_client.connect(username)        
-    game = Game(data,connection)
-    game.run()
-# except Exception as e:
-#     print(e)
     try:
-        connection.close_con()
-    except UnboundLocalError:
-        pass
-    pygame.quit()
-    sys.exit()
+        ip = intro_screen.get_ip()
+        connection = Connection(ip)
+        data = intro_screen.main(connection.init_conn_client)
+        username = data[0]
+        connection.udp_client.set_username(username)
+        connection.chat_client.connect(username)        
+        game = Game(data,connection)
+        game.run()
+    except Exception as e:
+        print(e)
+    finally:
+        try:
+            connection.close_con()
+        except UnboundLocalError:
+            pass
+        pygame.quit()
+        sys.exit()
 
 if __name__ == '__main__':
     main()
