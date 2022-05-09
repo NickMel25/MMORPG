@@ -3,8 +3,6 @@ from datetime import datetime
 import threading
 from time import sleep
 import encryption
-
-
 class Chat_server:
     def __init__(self,client_list) -> None:        
         self.ip = '0.0.0.0'
@@ -56,3 +54,4 @@ class Chat_server:
             thread.daemon = True
             thread.start()
             print("created new chat thread")
+

@@ -6,6 +6,8 @@ import threading
 class Chat:
 
     def __init__(self,screen,username,chat_client):
+
+
         self.screen = screen
         self.display_surface = pygame.display.get_surface()
         self.input_rect = boxes.input_box(300,20,10,520,self.screen,(0,0,0),100)
@@ -36,9 +38,13 @@ class Chat:
             boxes.screenblit(text_surface,(self.chat_rect.x,self.chat_rect.y+3+i),self.screen,255,(255,255,255))
             i+=20
             
+            # if text_surface.get_width() < self.input_rect.w:
+            #     boxes.screenblit(self.input_rect,(self.input_rect.x,self.input_rect.y),self.screen,100,(0,0,0))
+            #     boxes.screenblit(text_surface,(self.input_rect.x,self.input_rect.y+3),self.screen,255,(255,255,255))
 
         pygame.display.update()
         pass
+
 
     def sort_text(self,text):
             temp = ''
@@ -57,10 +63,12 @@ class Chat:
                 temp = ''
 
             
+
     def recv_chat(self):
         msg = ['']
         while True:
             msg[0] = self.chat_client.recv()
+
             
             self.sort_text(msg)
             self.display()
@@ -76,6 +84,7 @@ class Chat:
         thread.daemon = True
         thread.start()
     
+
 
     def get_events(self,main_events):
         self.events.append(main_events)

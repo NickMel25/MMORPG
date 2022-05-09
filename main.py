@@ -1,12 +1,10 @@
 import pygame, sys
-from player import Player
 from settings import *
 from level import Level
 # import udp_client
 from chat_rect import Chat
 import boxes
 import intro_screen
-import end_conn_client
 from connection import Connection
 
 username = ''
@@ -25,6 +23,7 @@ class Game:
         self.connection = connection
 
     
+
     def run(self):
         global game
         global player
@@ -70,36 +69,46 @@ class Game:
                         
 
 
+
             self.screen.fill(WATER_COLOR)
             self.level.run()
             chat_rect.display()
-            boxes.font_render(chat_rect.input_rect,chat_rect.font,self.screen,chat_rect.insert_text,(0,0,0),100)
+
+
+            boxes.font_render(chat_rect.input_rect, chat_rect.font, self.screen, chat_rect.insert_text, (0, 0, 0), 100)
             pygame.display.update()
             self.clock.tick(FPS)
             ans = player.to_string()
-            self.connection.udp_client.send(ans)
 
- 
+            if player.is_magic:
+                ans += ":" + f"{player.magic_rect}"
+            else:
+                if player.attacking:
+                    ans += ":" + f"{self.level.return_current_attack()}"
+                else:
+                    ans += ":0"
+
+            if 'idle' not in player.status:
+                self.connection.udp_client.send(ans)
+
 def main():
     global username
-    try: 
-        ip = intro_screen.get_ip()
-        connection = Connection(ip)
-        data = intro_screen.main(connection.init_conn_client)
-        username = data[0]
-        connection.udp_client.set_username(username)
-        connection.chat_client.connect(username)        
-        game = Game(data,connection)
-        game.run()
-    except Exception as e:
-        print(e)
-    finally:
-        try:
-            connection.close_con()
-        except UnboundLocalError:
-            pass
-        pygame.quit()
-        sys.exit()
+    ip = intro_screen.get_ip()
+    connection = Connection(ip)
+    data = intro_screen.main(connection.init_conn_client)
+    username = data[0]
+    connection.udp_client.set_username(username)
+    connection.chat_client.connect(username)        
+    game = Game(data,connection)
+    game.run()
+# except Exception as e:
+#     print(e)
+    try:
+        connection.close_con()
+    except UnboundLocalError:
+        pass
+    pygame.quit()
+    sys.exit()
 
 if __name__ == '__main__':
     main()

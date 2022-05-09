@@ -7,8 +7,10 @@ from entity import Entity
 
 
 
+
 class Player(Entity):
     def __init__(self, pos, groups, obstacle_sprites, create_attack, destroy_attack, create_magic, data):
+
         super().__init__(groups)
         self.image = pygame.image.load('graphics/test/player.png').convert_alpha()
         self.rect = self.image.get_rect(topleft=pos)
@@ -24,6 +26,7 @@ class Player(Entity):
         self.display_surface = pygame.display.get_surface()
 
         self.username = data[0]
+
         # graphics setup
         self.import_player_assets()
         self.status = 'down'
@@ -49,9 +52,11 @@ class Player(Entity):
         self.magic = list(magic_data.keys())[self.magic_index]
         self.can_switch_magic = True
         self.magic_switch_time = None
+        self.magic_rect = pygame.rect.Rect((0, 0), (0, 0))
+        self.is_magic = False
 
         # stats
-        self.stats = {'health': 100, 'energy': 60, 'attack': 10, 'magic': 4, 'speed': 5}
+        self.stats = {'health': 100, 'energy': 60, 'attack': 10, 'magic': 4, 'speed': 10}
         self.max_stats = {'health': 300, 'energy': 140, 'attack': 20, 'magic': 10, 'speed': 10}
         self.upgrade_cost = {'health': 100, 'energy': 100, 'attack': 100, 'magic': 100, 'speed': 100}
         self.health = self.stats['health'] * 0.5
@@ -59,9 +64,16 @@ class Player(Entity):
         self.exp = 0
         self.speed = self.stats['speed']
 
+
+        self.num_water_potion = 0
+        self.num_blood_potion = 0
+        self.num_coin = 0
+        self.num_bamboo = 0
+
         # damage timer
         self.vulnerable = True
-        self.hurt_time = None
+        self.hurt_time = 0
+
         self.invulnerability_duration = 500
 
     def import_player_assets(self):
@@ -73,6 +85,10 @@ class Player(Entity):
         for animation in self.animations.keys():
             full_path = character_path + animation
             self.animations[animation] = import_folder(full_path)
+
+
+    def return_magic(self):
+        return self.magic_rect
 
     def input(self):
         if not self.attacking:
@@ -103,7 +119,8 @@ class Player(Entity):
                     self.attacking = True
                     self.attack_time = pygame.time.get_ticks()
                     self.create_attack()
-                    if self.weapon_index == 5:
+
+                    if self.weapon_index == 2:
                         style = 'crossbow'
                         strength = 60
                         cost = 0
@@ -111,6 +128,9 @@ class Player(Entity):
 
                 # magic input
                 if keys[pygame.K_LCTRL]:
+
+                    self.is_magic = True
+
                     self.attacking = True
                     self.attack_time = pygame.time.get_ticks()
                     style = list(magic_data.keys())[self.magic_index]
@@ -140,9 +160,7 @@ class Player(Entity):
 
                     self.magic = list(magic_data.keys())[self.magic_index]
 
-
     def get_status(self):
-
         # idle status
         if self.direction.x == 0 and self.direction.y == 0:
             if not 'idle' in self.status and not 'attack' in self.status:
@@ -230,5 +248,6 @@ class Player(Entity):
         self.energy_recovery()
 
     def to_string(self):
-        #              username :direction(string):is attacking: location (int)  : hitbox
-        return f"{self.username}:{self.status}:{self.attacking}:{self.rect.topleft}:{self.hitbox}:{self.frame_index}:{self.num_bamboo}:{self.num_blood_potion}:{self.num_water_potion}:{self.num_coin}"
+        #          username   :direction(string):  is attacking:    location (int)    : hitbox      : frame index
+        return f"{self.username}:{self.status}:{self.attacking}:{self.rect.topleft}:{self.hitbox}:{self.frame_index}:{self.health}:{self.num_bamboo}:{self.num_blood_potion}:{self.num_water_potion}:{self.num_coin}"
+

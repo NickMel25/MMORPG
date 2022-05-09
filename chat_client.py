@@ -35,3 +35,4 @@ class Chat_client:
             return None
         return encryption.symmetric_decrypt_message(data,self.secret_key,self.pad_char)
         
+

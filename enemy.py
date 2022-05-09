@@ -12,6 +12,7 @@ class Enemy(Entity):
     def __init__(self, monster_name, pos, groups, obstacle_sprites, damage_player, trigger_death_particles, add_exp,player):
 
         self.player = player
+
         # general setup
         super().__init__(groups)
         self.sprite_type = 'enemy'
@@ -66,8 +67,8 @@ class Enemy(Entity):
             direction = (player_vec - enemy_vec).normalize()
         else:
             direction = pygame.math.Vector2()
-
         return (distance, direction)
+
 
     def get_status(self, player):
         distance = self.get_player_distance_direction(player)[0]
@@ -155,6 +156,7 @@ class Enemy(Entity):
                 self.player.num_blood_potion += 1
             else:
                 self.player.num_bamboo += 1
+
 
     def hit_reaction(self):
         if not self.vulnerable:

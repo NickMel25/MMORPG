@@ -1,4 +1,6 @@
+import math
 import pygame
+from settings import monster_data
 
 class fake_player(pygame.sprite.Sprite):
     def __init__(self, name) -> None:
@@ -22,7 +24,8 @@ class fake_player(pygame.sprite.Sprite):
 
 
 class fake_monster(pygame.sprite.Sprite):
-    def __init__(self, name, hp, location, id) -> None:
+
+    def __init__(self, name, hp, location, id, moving, the_player_it_goes_to) -> None:
         super().__init__()
         if name == "bamboo":
             self.image = pygame.image.load('graphics/monsters/bamboo/idle/0.png')
@@ -42,8 +45,13 @@ class fake_monster(pygame.sprite.Sprite):
         self.image_path = ''
         self.id = id
 
+        self.is_moving = moving
+        self.the_player_it_goes_to = the_player_it_goes_to
+        self.speed = monster_data[name]['speed']
+
     def is_dead(self):
-        if self.hp <= 0 :
+        if self.hp <= 0:
+
             self.isdead = True
 
     def location(self, location):
@@ -51,3 +59,15 @@ class fake_monster(pygame.sprite.Sprite):
 
     def update(self):
          self.rect.topleft = self.next_location
+
+
+    def enemy_update(self):
+        pass
+
+    def set_moving_and_location(self, location, moving):
+        self.next_location = location
+        self.is_moving = moving
+
+    def set_destination(self, the_player_it_goes_to):
+        self.the_player_it_goes_to = the_player_it_goes_to
+

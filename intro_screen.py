@@ -1,13 +1,16 @@
 from queue import Empty
 import pygame
 import boxes
+
 pygame.init()
 screen = pygame.display.set_mode((1460,920))
 base_font = pygame.font.Font(None, 45)
 
 
 Login_img= pygame.image.load(r'Images/Intro_Images/Login.png').convert()
+
 register_img = pygame.image.load(r'Images/Intro_Images/Register.png')
+
 intro_img= pygame.image.load(r'Images/Intro_Images/374088.jpg').convert()
 input_bar =  pygame.Surface((545,68))
 
@@ -15,8 +18,10 @@ login_x = (screen.get_width()-Login_img.get_width())/2
 login_y = (screen.get_height()-Login_img.get_height())/2
 username_text = ['',]
 password_text = ['',]
+
 confirmpassword_text = ['',]
 mode = 'login'
+
 def screenblit(rectangle,x,y):
     if str(type(rectangle)) == "<class 'pygame.Surface'>": 
         return screen.blit(rectangle, (x,y))
@@ -35,7 +40,9 @@ def exit(event):
 
 # ------------------------------------------------------------------------
 
+
 def display_screen(choice: str) -> dict:
+
 
     global login_y
     global login_x
@@ -95,6 +102,7 @@ def key_input(input_rect,rect_name):
                     text += event.unicode
 
                 if rect_name == "password" or rect_name == "confrimpassword":
+
                     pass_text = len(text)*'*'
                 else:
                     pass_text = text
@@ -155,6 +163,7 @@ def main(init_conn_client):
     
     global username_text, password_text, confirmpassword_text,mode
     rect_list = display_screen(mode)
+
     print(type(pygame.surface))
     pending = None
     pass_text = ['',]
@@ -214,6 +223,7 @@ def main(init_conn_client):
                             return result
                     elif rect == "cancel":
                         return
+
                     else:
                         pending = None
 
@@ -221,3 +231,4 @@ def main(init_conn_client):
 
 if __name__ == '__main__':
     get_ip()
+
