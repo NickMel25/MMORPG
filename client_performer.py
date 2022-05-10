@@ -108,8 +108,8 @@ def enemy_exists(id):
 
 def print_monsters_around_player(data):
     global last_hurt
-
-    type = data[0]
+    print(data)
+    type =  data[0]
     health = data[1]
     moving = data[2]
 

@@ -1,13 +1,12 @@
 import socket
 from threading import Thread
 import client_performer
-import encryption
 
 
 
 
 class Udp_client:
-    def __init__(self, ip : str, secret_key : bytes, private_client_key, public_client_key, public_server_key, pad_char : str ) -> None:
+    def __init__(self, ip : str) -> None:
 
         # self.ip =socket.gethostbyname(socket.gethostname())
         self.server_ip = ip
@@ -15,19 +14,12 @@ class Udp_client:
         self.player_port = 10001
         self.port = 12345
         self.udp_client = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        self.udp_client.bind((self.ip,self.port))
+        # self.udp_client.bind((self.ip,self.port))
 
-        self.monster_port = 32456
+        
         self.monster_udp_client = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        self.monster_udp_client.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-        self.monster_udp_client.bind((socket.gethostbyname(socket.gethostname()), 32456))
 
-        self.secret_key = secret_key
-        self.private_client_key = private_client_key
-        self.public_client_key = public_client_key
-        self.public_server_key = public_server_key
-        self.pad_char = pad_char
-        self.username = ''
+
 
 
     def recv_monster_thread_handler(self):
@@ -36,7 +28,7 @@ class Udp_client:
             if (monster_data == "get_stuff"):
                 client_performer.get_the_stuff()
             else:
-                answer = monster_data.split(":")
+                answer = monster_data.decode().split(":")
                 try:
                     client_performer.print_monsters_around_player(answer)
                 except:
@@ -51,8 +43,7 @@ class Udp_client:
 
     def recieve_for_monster(self):
         msg, conn = self.monster_udp_client.recvfrom(1024)
-        decrypted_msg = encryption.symmetric_decrypt_message(msg,self.secret_key,self.pad_char)
-        return decrypted_msg
+        return msg
 
 
 
@@ -80,15 +71,13 @@ class Udp_client:
 
     def receive(self):
         try:
-            msg ,conn = self.udp_client.recvfrom(1024)
-            decrypted_msg = encryption.symmetric_decrypt_message(msg,self.secret_key,self.pad_char)
-            return decrypted_msg
+            msg ,conn = self.udp_client.recvfrom(1024).decode()
+            return msg
         except:
             return False
 
     def send(self, msg : str):
-        encrypted_msg = encryption.symmetric_encrypt_message(msg,self.secret_key,self.pad_char)
-        self.udp_client.sendto(self.username.encode()+" ".encode()+encrypted_msg,(self.server_ip,self.player_port))
+        self.udp_client.sendto(self.username.encode()+"∞".encode()+msg.encode(),(self.server_ip,self.player_port))
 
 
     # def proccess(self,data):    

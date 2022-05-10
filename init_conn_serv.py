@@ -17,7 +17,6 @@ class Init_conn_serv:
         self.server_connection = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.server_connection.bind((self.ip,self.port))
 
-        self.private_key, self.public_key = encryption.assymetric_generate_keys()
         self.client_list = sclient_list
         self.client_data = sclient_data
     
@@ -34,26 +33,10 @@ class Init_conn_serv:
 
     def thread_handler(self,conn,addr) -> None:
         try:
-            # keys exchange and setup
-            # conn.sendall(str.encode('blablabla'))
-
-            self.client_public_key = RSA.importKey(conn.recv(1024*4), passphrase=None) 
-            conn.sendall(self.public_key.publickey().exportKey())
-            secret_key = encryption.symmetric_generate_key()
-            encrypted_secret_key = encryption.assymetric_encrypt_message(secret_key,self.client_public_key)
-            conn.sendall(encrypted_secret_key)
-            pad_char = chr(randrange(1,26)+96)
-            encrypted_pad_char = encryption.assymetric_encrypt_message(pad_char.encode(),self.client_public_key)
-            conn.sendall(encrypted_pad_char)
-
-            confirmation_message = conn.recv(1024*4)
-            confirmation_message = encryption.symmetric_decrypt_message(confirmation_message,secret_key,pad_char)
-            # login / signup validity
             redo = True
             while redo:
-                encrypted_answer = conn.recv(1024*4)
-                decrypted_answer = encryption.symmetric_decrypt_message(encrypted_answer,secret_key,pad_char)
-                mode,username,password,confirmpassword = decrypted_answer.split(":")
+                answer = conn.recv(1024*4).decode()
+                mode,username,password,confirmpassword = answer.split(":")
                 if mode == 'login':
                     result = db_access.login(username,password)
                 if mode == 'signup':
@@ -68,18 +51,14 @@ class Init_conn_serv:
                 elif mode == 'signup' and (result == 'Username or Password cant be empty' or result == 'Password mismatch' or result == 'Invalid characters' or result == 'Username too long' or result == 'Username taken') :
                     answer = result+":"
                 
-                encrypted_result = encryption.symmetric_encrypt_message(answer,secret_key,pad_char)
-                conn.sendall(encrypted_result)
+
+                conn.sendall(answer.encode())
 
             username = user_data[0]
 
             self.client_list[username] = self.client_data.copy()
-            self.client_list[username]['game']['username'] = username
-            self.client_list[username]['conn']['seckey'] = secret_key 
             self.client_list[username]['conn']['ip'] = addr[0]
-            self.client_list[username]['conn']['port'] = addr[1]
-            self.client_list[username]['conn']['pad_char'] = pad_char
-            self.client_list[username]['conn']['pubkey'] = self.client_public_key
+            self.client_list[username]['game']['username'] = username
             self.client_list[username]['game']['health'] = user_data[1]
             self.client_list[username]['game']['mana'] = user_data[2]
             self.client_list[username]['game']['location'] = (user_data[3],user_data[4])

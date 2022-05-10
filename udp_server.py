@@ -4,7 +4,6 @@ import threading
 from  init_conn_serv import Init_conn_serv
 from chat_server import Chat_server
 from end_conn_serv import End_conn_serv
-import encryption
 import atexit
 from support import import_csv_layout
 import random
@@ -259,8 +258,7 @@ def monster_thread():
 
 
 def send_for_monster(ans, conn,username):
-    encrypted_ans = encryption.symmetric_encrypt_message(ans,client_list[username]["conn"]["seckey"],client_list[username]["conn"]["pad_char"])
-    udp_server.sendto(encrypted_ans, (conn[0], conn[1]))
+    udp_server.sendto(ans.encode(), (conn[0], conn[1]))
 
 
 # ============================================================================================================================================
@@ -294,6 +292,7 @@ def exists(username: str)-> bool:
 def append(data: str) -> None:
     global data_list
     
+
     
     answers = data.split(":")
     temp_list = data_list
@@ -305,6 +304,7 @@ def append(data: str) -> None:
     client_info['game']['attacking'] = bool(answers[2])
     temp = answers[3][1:-1]
     temp =  tuple(map(int, temp.split(',')))
+    print(temp)
     client_info['game']['location'] = temp
     client_info['game']['hitbox'] = answers[4]
     client_info['game']['frame'] = int(floor(float(answers[5])))
@@ -327,19 +327,16 @@ def iterate_users(nearby: dict,conn) -> None:
 
 
 def send(ans,conn):
-    username = [k for k, v in client_list.items() if v['conn']['ip'] == conn[0]][0]
-    encrypted_ans = encryption.symmetric_encrypt_message(ans, client_list[username]['conn']['seckey'], client_list[username]['conn']['pad_char'])
-    udp_server.sendto(encrypted_ans, (conn[1][0],conn[1][1]))
+    udp_server.sendto(ans.encode(), (conn[1][0],conn[1][1]))
 
 
 def receive():
     try:
         msg, conn = udp_server.recvfrom(1024)
-        username, msg = msg.decode().split(" ")
+        username, msg = msg.decode().split("∞")
         if not username in client_list:
             return False
-        decrypted_msg = encryption.symmetric_decrypt_message(msg, client_list[username]['conn']['seckey'], client_list[username]['conn']['pad_char'])
-        return decrypted_msg
+        return msg
     except:
         return False
 

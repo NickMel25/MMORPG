@@ -90,29 +90,29 @@ class Game:
 def exit_all():
     try:
         connection.close_con()
-    except UnboundLocalError:
+    except (UnboundLocalError, AttributeError):
         pass
     pygame.quit()
     sys.exit()
 
 def main():
     global username
-    try:
-        ip = intro_screen.get_ip()
-        connection = Connection(ip)
-        data = intro_screen.main(connection.init_conn_client)
-        username = data[0]
-        connection.udp_client.set_username(username)
-        connection.chat_client.connect(username)        
-        game = Game(data,connection)
-        game.run()
-    except:
-        try:
-            connection.close_con()
-        except UnboundLocalError:
-            pass
-        pygame.quit()
-        sys.exit()
+    # try:
+    ip = intro_screen.get_ip()
+    connection = Connection(ip)
+    data = intro_screen.main(connection.init_conn_client)
+    username = data[0]
+    connection.udp_client.set_username(username)
+    connection.chat_client.connect(username)        
+    game = Game(data,connection)
+    game.run()
+    # except:
+    #     try:
+    #         connection.close_con()
+    #     except UnboundLocalError:
+    #         pass
+    #     pygame.quit()
+    #     sys.exit()
 
 if __name__ == '__main__':
     main()
