@@ -16,9 +16,10 @@ class Udp_client:
         self.udp_client = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         # self.udp_client.bind((self.ip,self.port))
 
-        
+        self.monster_port = 32456
         self.monster_udp_client = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-
+        # self.monster_udp_client.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+        self.monster_udp_client.bind((socket.gethostbyname(socket.gethostname()), 32456))
 
 
 
@@ -46,7 +47,7 @@ class Udp_client:
         return msg
 
 
-
+ 
 
 
 
@@ -65,13 +66,13 @@ class Udp_client:
             if data:
                 data = data
                 try:
-                    client_performer.display_players(data,player,level)
+                    client_performer.display_players(data.decode(),player,level)
                 except:
                     pass
 
     def receive(self):
         try:
-            msg ,conn = self.udp_client.recvfrom(1024).decode()
+            msg ,conn = self.udp_client.recvfrom(1024)
             return msg
         except:
             return False

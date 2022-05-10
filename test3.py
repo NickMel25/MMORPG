@@ -1,4 +1,6 @@
-import socket
-
-udp = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-udp.recv(1024)
+ss = {'a':'b'}
+bb = ss.copy()
+bb['a'] = 'c'
+bb['c'] = 'r'
+print(ss)
+print(bb)

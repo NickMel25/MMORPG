@@ -8,7 +8,7 @@ import threading
 # import udp_server
 from Crypto.PublicKey import RSA
 import db_access
- 
+import copy
 class Init_conn_serv:
 
     def __init__(self,sclient_list,sclient_data) -> None:
@@ -32,7 +32,7 @@ class Init_conn_serv:
 
 
     def thread_handler(self,conn,addr) -> None:
-        try:
+        # try:
             redo = True
             while redo:
                 answer = conn.recv(1024*4).decode()
@@ -54,9 +54,10 @@ class Init_conn_serv:
 
                 conn.sendall(answer.encode())
 
-            username = user_data[0]
-
-            self.client_list[username] = self.client_data.copy()
+            # username = user_data[0]
+            # dis = self.client_data.deepcopy()
+            # dis = copy.deepcopy(self.client_data)
+            self.client_list[username] = {{},{}}
             self.client_list[username]['conn']['ip'] = addr[0]
             self.client_list[username]['game']['username'] = username
             self.client_list[username]['game']['health'] = user_data[1]
@@ -67,12 +68,24 @@ class Init_conn_serv:
             self.client_list[username]['game']['bloodpotion'] = user_data[8]
             self.client_list[username]['game']['spiritinabottle'] = user_data[9]
             self.client_list[username]['game']['coins'] = user_data[10]
+
+            # dis['conn']['ip'] = addr[0]
+            # dis['game']['username'] = username
+            # dis['game']['health'] = user_data[1]
+            # dis['game']['mana'] = user_data[2]
+            # dis['game']['location'] = (user_data[3],user_data[4])
+            # dis['game']['attack'] = user_data[5]
+            # dis['game']['bamboo'] = user_data[7]
+            # dis['game']['bloodpotion'] = user_data[8]
+            # dis['game']['spiritinabottle'] = user_data[9]
+            # dis['game']['coins'] = user_data[10]           
+            # self.client_list[username] = dis 
             conn.close()
-        except ValueError as e:
+        # except ValueError as e:
 
             conn.close()
             return
-        except ConnectionResetError as e:
+        # except ConnectionResetError as e:
             conn.close()
             return
         

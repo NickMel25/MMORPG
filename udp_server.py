@@ -1,4 +1,5 @@
 from math import floor
+from pydoc import cli
 import socket
 import threading
 from  init_conn_serv import Init_conn_serv
@@ -8,7 +9,7 @@ import atexit
 from support import import_csv_layout
 import random
 import pygame
-
+import copy
 # ============================================================================================================================================
 # -----------------------------------------------------------------CONSTANTS------------------------------------------------------------------
 # ============================================================================================================================================
@@ -31,9 +32,8 @@ end_conn_serv = None
 client_time = {'attack':0,'hit':0,"movement":0}
 data_list = {'username':'','direction':'','attacking':'','location':'','hitbox':'','frame':'','health':0, 'bamboo':0,'bloodpotion':0,'spiritinabottle':0,'coins':0,'health':0,'mana':0,'attack':0,'weapon':0}
 client_conn = {'ip':'',"port":0,"pubkey":'','seckey':'','pad_char':''}
-client_data = {'game':data_list.copy(),"timers":client_time.copy(),'conn':client_conn.copy()}
+client_data = {'game':copy.deepcopy(data_list),"timers":copy.deepcopy(client_time),'conn':copy.deepcopy(client_conn)}
 client_list = {}
-
 enemies_list = []
 on_enemies_screen_players = []
 moving_monsters = []
@@ -67,8 +67,8 @@ monster_data = {
 
 
 
-def get_client_list() -> dict:
-    return client_list,client_data.copy()
+# def get_client_list() -> dict:
+#     return client_list,client_data.copy()
 
 
 
@@ -219,7 +219,7 @@ def enemy_player_proximity():
 
                 weapon_rect = client_list[player]['game']["weapon"]
                 monster_rect = pygame.Rect(enemies_list[counter]['location'][0], enemies_list[counter]['location'][1],64, 64)
-                check_player_enemy_collision(monster_rect, client_list[player]['game']["hitbox"], counter, player)
+                # check_player_enemy_collision(monster_rect, client_list[player]['game']["hitbox"], counter, player)
 
                 if distance <= monster_data[enemies_list[counter]['type']]['attack_radius'] and client_list[player]['game']["attacking"] == True and client_list[player]['game']["weapon"] != '0' and client_list[player]['game']["hitbox"] != '':
 
@@ -289,15 +289,15 @@ def exists(username: str)-> bool:
     return username in client_list
 
 
-def append(data: str) -> None:
+def append(data: str,conn) -> None:
     global data_list
     
 
     
     answers = data.split(":")
     temp_list = data_list
-    # client_info = client_data.copy()
-    # client_list[answers[0]]= client_info.copy()
+    # client_info = copy.deepcopy(client_data)
+    # client_list[answers[0]]= copy.deepcopy(client_info)
     client_info = client_list[answers[0]]
     client_info['game']['username'] = answers[0]
     client_info['game']['direction']= answers[1]
@@ -315,7 +315,8 @@ def append(data: str) -> None:
     client_info['game']['coins'] = int(answers[10])
     client_info['game']['weapon'] = answers[11]
     client_info['game']['last_attacked'] = 0
-
+    client_info['conn']['ip'] = conn[0]
+    client_info['conn']['port'] = conn[1]
 def add_user(username: str) -> None:
     global data_list
     client_list[username]= data_list    
@@ -323,11 +324,11 @@ def add_user(username: str) -> None:
 
 def iterate_users(nearby: dict,conn) -> None:
     for user in nearby:
-        send(nearby[user],conn)
+        send(nearby[user],(conn))
 
 
 def send(ans,conn):
-    udp_server.sendto(ans.encode(), (conn[1][0],conn[1][1]))
+    udp_server.sendto(ans.encode(), (conn))
 
 
 def receive():
@@ -336,7 +337,7 @@ def receive():
         username, msg = msg.decode().split("∞")
         if not username in client_list:
             return False
-        return msg
+        return msg, conn
     except:
         return False
 
@@ -346,7 +347,7 @@ def main():
     
 
     
-    init_conn_serv = Init_conn_serv(client_list,client_data)
+    init_conn_serv = Init_conn_serv(client_list,copy.deepcopy(client_data))
     thread = threading.Thread(target=init_conn_serv.main)
     thread.daemon = True
     thread.start()
@@ -363,12 +364,15 @@ def main():
     create_enemies_place()
     monster_thread()
     while True:
-        data = receive()
+        try:
+            data,conn = receive()
+        except TypeError:
+            continue
         if data:
-            append(data)
+            append(data,conn)
             nearby = proximity(data.split(":")[0])
             nearby = make_string(nearby)
-            iterate_users(nearby,data)
+            iterate_users(nearby,conn)
 
 
 def close_all():
