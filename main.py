@@ -77,12 +77,16 @@ class Game:
 
             if player.is_magic:
                 ans += ":" + f"{player.magic_rect}"
-                player.is_magic = False
+                print(player.magic_rect)
+                # player.is_magic = False
             else:
                 if player.attacking:
                     ans += ":" + f"{self.level.return_current_attack()}"
                 else:
-                    ans += ":0"
+                    try:
+                        ans += ":0"
+                    except:
+                        pass
 
             if 'idle' not in player.status:
                 self.connection.udp_client.send(ans)

@@ -72,7 +72,7 @@ class Level:
         layouts = {
             'boundary': import_csv_layout('map/map_FloorBlocks.csv'),
             'object': import_csv_layout('map/map_Objects.csv'),
-            'entities': import_csv_layout('map/map_Entities.csv')
+            # 'entities': import_csv_layout('map/map_Entities.csv')
         }
         graphics = {
             'grass': import_folder('graphics/grass'),
@@ -104,13 +104,13 @@ class Level:
                         if style == 'entities':
                             if col == '394':
 
-                                # self.player = Player(
-                                #     (x, y),
-                                #     [self.visible_sprites],
-                                #     self.obstacle_sprites,
-                                #     self.create_attack,
-                                #     self.destroy_attack,
-                                #     self.create_magic,data)
+                                self.player = Player(
+                                    (x, y),
+                                    [self.visible_sprites],
+                                    self.obstacle_sprites,
+                                    self.create_attack,
+                                    self.destroy_attack,
+                                    self.create_magic,data)
                                 pass
 
                             else:
@@ -155,20 +155,20 @@ class Level:
             self.current_attack.kill()
         self.current_attack = None
 
-    def player_attack_logic(self):
-        if self.attack_sprites:
-            for attack_sprite in self.attack_sprites:
-                collision_sprites = pygame.sprite.spritecollide(attack_sprite, self.attackable_sprites, False)
-                if collision_sprites:
-                    for target_sprite in collision_sprites:
-                        if target_sprite.sprite_type == 'grass':
-                            pos = target_sprite.rect.center
-                            offset = pygame.math.Vector2(0, 75)
-                            for leaf in range(randint(3, 6)):
-                                self.animation_player.create_grass_particles(pos - offset, [self.visible_sprites])
-                            target_sprite.kill()
-                        else:
-                            target_sprite.get_damage(self.player, attack_sprite.sprite_type)
+    # def player_attack_logic(self):
+    #     if self.attack_sprites:
+    #         for attack_sprite in self.attack_sprites:
+    #             collision_sprites = pygame.sprite.spritecollide(attack_sprite, self.attackable_sprites, False)
+    #             if collision_sprites:
+    #                 for target_sprite in collision_sprites:
+    #                     if target_sprite.sprite_type == 'grass':
+    #                         pos = target_sprite.rect.center
+    #                         offset = pygame.math.Vector2(0, 75)
+    #                         for leaf in range(randint(3, 6)):
+    #                             self.animation_player.create_grass_particles(pos - offset, [self.visible_sprites])
+    #                         target_sprite.kill()
+    #                     else:
+    #                         target_sprite.get_damage(self.player, attack_sprite.sprite_type)
 
 
     def damage_player(self, amount):
@@ -280,7 +280,7 @@ class Level:
         else:
             self.visible_sprites.update()
 
-            self.player_attack_logic()
+            # self.player_attack_logic()
   
 
 
@@ -298,15 +298,187 @@ class YSortCameraGroup(pygame.sprite.Group):
         self.floor_surf = pygame.image.load('graphics/tilemap/ground.png').convert()
         self.floor_rect = self.floor_surf.get_rect(topleft=(0, 0))
 
-    def custom_draw(self, player):
+        # if player enters area for first time
+        # if it's the first time = 0, else = 1
+        self.au = 0
+        self.am = 0
+        self.al = 0
+        self.bu = 0
+        self.bm = 0
+        self.bl = 0
+        self.cu = 0
+        self.cm = 0
+        self.cl = 0
+        self.du = 0
+        self.dm = 0
+        self.dl = 0
 
+    # def custom_draw(self, player):
+    #
+    #     # getting the offset
+    #     self.offset.x = player.rect.centerx - self.half_width
+    #     self.offset.y = player.rect.centery - self.half_height
+    #
+    #     # drawing the floor
+    #     floor_offset_pos = self.floor_rect.topleft - self.offset
+    #     self.display_surface.blit(self.floor_surf, floor_offset_pos)
+    #
+    #     # for sprite in self.sprites():
+    #     for sprite in sorted(self.sprites(), key=lambda sprite: sprite.rect.centery):
+    #         offset_pos = sprite.rect.topleft - self.offset
+    #         self.display_surface.blit(sprite.image, offset_pos)
+
+        # loading the floor images commands
+
+    def loadAu(self):
+        self.floor_surf_Au = pygame.image.load('graphics/tilemap/Au.jpeg')
+        self.floor_rect_Au = self.floor_surf_Au.get_rect(topleft=(0, 0))
+
+    def loadAm(self):
+        self.floor_surf_Am = pygame.image.load('graphics/tilemap/Am.jpeg')
+        self.floor_rect_Am = self.floor_surf_Am.get_rect(topleft=(0, 7776))
+
+    def loadAl(self):
+        self.floor_surf_Al = pygame.image.load('graphics/tilemap/Al.jpeg')
+        self.floor_rect_Al = self.floor_surf_Al.get_rect(topleft=(0, 16272))
+
+    def loadBu(self):
+        self.floor_surf_Bu = pygame.image.load('graphics/tilemap/Bu.jpeg')
+        self.floor_rect_Bu = self.floor_surf_Bu.get_rect(topleft=(7040, 0))
+
+    def loadBm(self):
+        self.floor_surf_Bm = pygame.image.load('graphics/tilemap/Bm.jpeg')
+        self.floor_rect_Bm = self.floor_surf_Bm.get_rect(topleft=(7040, 7776))
+
+    def loadBl(self):
+        self.floor_surf_Bl = pygame.image.load('graphics/tilemap/Bl.jpeg')
+        self.floor_rect_Bl = self.floor_surf_Bl.get_rect(topleft=(7040, 16272))
+
+    def loadCu(self):
+        self.floor_surf_Cu = pygame.image.load('graphics/tilemap/Cu.jpeg')
+        self.floor_rect_Cu = self.floor_surf_Cu.get_rect(topleft=(15360, 0))
+
+    def loadCm(self):
+        self.floor_surf_Cm = pygame.image.load('graphics/tilemap/Cm.jpeg')
+        self.floor_rect_Cm = self.floor_surf_Cm.get_rect(topleft=(15360, 7776))
+
+    def loadCl(self):
+        self.floor_surf_Cl = pygame.image.load('graphics/tilemap/Cl.jpeg')
+        self.floor_rect_Cl = self.floor_surf_Cl.get_rect(topleft=(15360, 16272))
+
+    def loadDu(self):
+        self.floor_surf_Du = pygame.image.load('graphics/tilemap/Du.jpeg')
+        self.floor_rect_Du = self.floor_surf_Du.get_rect(topleft=(23680, 0))
+
+    def loadDm(self):
+        self.floor_surf_Dm = pygame.image.load('graphics/tilemap/Dm.jpeg')
+        self.floor_rect_Dm = self.floor_surf_Dm.get_rect(topleft=(23680, 7776))
+
+    def loadDl(self):
+        self.floor_surf_Dl = pygame.image.load('graphics/tilemap/Dl.jpeg')
+        self.floor_rect_Dl = self.floor_surf_Dl.get_rect(topleft=(23680, 16272))
+
+    # drawing the floor
+    def custom_draw(self, player):
         # getting the offset
         self.offset.x = player.rect.centerx - self.half_width
         self.offset.y = player.rect.centery - self.half_height
 
-        # drawing the floor
-        floor_offset_pos = self.floor_rect.topleft - self.offset
-        self.display_surface.blit(self.floor_surf, floor_offset_pos)
+        # area A
+        if 0 < player.rect.centerx < 7680:
+            # upper
+            if 0 < player.rect.centery < 8136:
+                if self.au == 0:
+                    self.loadAu()
+                    self.au = 1
+                floor_offset_pos_Au = self.floor_rect_Au.topleft - self.offset
+                self.display_surface.blit(self.floor_surf_Au, floor_offset_pos_Au)
+            # middle
+            elif 8136 <= player.rect.centery < 16632:
+                if self.am == 0:
+                    self.loadAm()
+                    self.am = 1
+                floor_offset_pos_Am = self.floor_rect_Am.topleft - self.offset
+                self.display_surface.blit(self.floor_surf_Am, floor_offset_pos_Am)
+            # lower
+            elif 16632 <= player.rect.centery < 24768:
+                if self.al == 0:
+                    self.loadAl()
+                    self.al = 1
+                floor_offset_pos_Al = self.floor_rect_Al.topleft - self.offset
+                self.display_surface.blit(self.floor_surf_Al, floor_offset_pos_Al)
+
+        # area B
+        elif 7680 <= player.rect.centerx < 16000:
+            # upper
+            if 0 < player.rect.centery < 8136:
+                if self.bu == 0:
+                    self.loadBu()
+                    self.bu = 1
+                floor_offset_pos_Bu = self.floor_rect_Bu.topleft - self.offset
+                self.display_surface.blit(self.floor_surf_Bu, floor_offset_pos_Bu)
+            # middle
+            elif 8136 <= player.rect.centery < 16632:
+                if self.bm == 0:
+                    self.loadBm()
+                    self.bm = 1
+                floor_offset_pos_Bm = self.floor_rect_Bm.topleft - self.offset
+                self.display_surface.blit(self.floor_surf_Bm, floor_offset_pos_Bm)
+            # lower
+            elif 16632 <= player.rect.centery < 24768:
+                if self.bl == 0:
+                    self.loadBl()
+                    self.bl = 1
+                floor_offset_pos_Bl = self.floor_rect_Bl.topleft - self.offset
+                self.display_surface.blit(self.floor_surf_Bl, floor_offset_pos_Bl)
+
+        # area c
+        elif 16000 <= player.rect.centerx < 24320:
+            # upper
+            if 0 < player.rect.centery < 8136:
+                if self.cu == 0:
+                    self.loadCu()
+                    self.cu = 1
+                floor_offset_pos_Cu = self.floor_rect_Cu.topleft - self.offset
+                self.display_surface.blit(self.floor_surf_Cu, floor_offset_pos_Cu)
+            # middle
+            elif 8136 <= player.rect.centery < 16632:
+                if self.cm == 0:
+                    self.loadCm()
+                    self.cm = 1
+                floor_offset_pos_Cm = self.floor_rect_Cm.topleft - self.offset
+                self.display_surface.blit(self.floor_surf_Cm, floor_offset_pos_Cm)
+            # lower
+            elif 16632 <= player.rect.centery < 24768:
+                if self.cl == 0:
+                    self.loadCl()
+                    self.cl = 1
+                floor_offset_pos_Cl = self.floor_rect_Cl.topleft - self.offset
+                self.display_surface.blit(self.floor_surf_Cl, floor_offset_pos_Cl)
+
+        # area d
+        elif 24320 <= player.rect.centerx < 32000:
+            # upper
+            if 0 < player.rect.centery < 8136:
+                if self.du == 0:
+                    self.loadDu()
+                    self.du = 1
+                floor_offset_pos_Du = self.floor_rect_Du.topleft - self.offset
+                self.display_surface.blit(self.floor_surf_Du, floor_offset_pos_Du)
+            # middle
+            elif 8136 <= player.rect.centery < 16632:
+                if self.dm == 0:
+                    self.loadDm()
+                    self.dm = 1
+                floor_offset_pos_Dm = self.floor_rect_Dm.topleft - self.offset
+                self.display_surface.blit(self.floor_surf_Dm, floor_offset_pos_Dm)
+            # lower
+            elif 16632 <= player.rect.centery < 24768:
+                if self.dl == 0:
+                    self.loadDl()
+                    self.dl = 1
+                floor_offset_pos_Dl = self.floor_rect_Dl.topleft - self.offset
+                self.display_surface.blit(self.floor_surf_Dl, floor_offset_pos_Dl)
 
         # for sprite in self.sprites():
         for sprite in sorted(self.sprites(), key=lambda sprite: sprite.rect.centery):

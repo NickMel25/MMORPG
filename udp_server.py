@@ -44,10 +44,7 @@ layouts = {
     'floor': import_csv_layout('map/map_Floor.csv'),
     'boundary': import_csv_layout('map/map_FloorBlocks.csv'),
     'object': import_csv_layout('map/map_Objects.csv'),
-    'entities': import_csv_layout('map/map_Entities.csv')
 }
-
-ban_list_floor = [274, 273, 271, 252]
 
 tiled_map = []
 blabla = {}
@@ -59,8 +56,8 @@ monster_data = {
               'speed': 3, 'resistance': 3, 'attack_radius': 80,
               'notice_radius': 360, 'location': [], 'attack': False},
     'spirit': {'health': 100, 'exp': 110, 'attack_type': 'thunder',
-               'speed': 4, 'resistance': 3, 'attack_radius': 60,
-               'notice_radius': 350, 'location': [], 'attack': True},
+               'speed': 4, 'resistance': 3, 'attack_radius': 256,
+               'notice_radius': 350, 'location': [], 'attack': False},
     'bamboo': {'health': 70, 'exp': 120, 'attack_type': 'leaf_attack',
                'speed': 3, 'resistance': 3, 'attack_radius': 50,
                'notice_radius': 300, 'location': [], 'attack': False}}
@@ -75,7 +72,7 @@ def get_good_placing():
     xEnemy = random.randrange(0, 50)
     yEnemy = random.randrange(0, 56)
 
-    while (int(layouts['floor'][xEnemy][yEnemy])) in ban_list_floor or (int(layouts['boundary'][xEnemy][yEnemy]) != -1) or (int(layouts['object'][xEnemy][yEnemy]) != -1):
+    while (int(layouts['floor'][xEnemy][yEnemy])) == 34 or int(layouts['floor'][xEnemy][yEnemy]) == 251 or (int(layouts['boundary'][xEnemy][yEnemy]) != -1) or (int(layouts['object'][xEnemy][yEnemy]) != -1):
         xEnemy = random.randrange(0, 50)
         yEnemy = random.randrange(0, 56)
 
@@ -208,12 +205,13 @@ def enemy_player_proximity():
                     enemies_list[counter]['moving'] = True
                     move_monster(direction, counter)
 
+
                 weapon_rect = client_list[player]['game']["weapon"]
                 monster_rect = pygame.Rect(enemies_list[counter]['location'][0], enemies_list[counter]['location'][1],64, 64)
                 check_player_enemy_collision(monster_rect, client_list[player]['game']["hitbox"], counter, player)
 
                 if distance <= monster_data[enemies_list[counter]['type']]['attack_radius'] and client_list[player]['game']["attacking"] == True and client_list[player]['game']["weapon"] != '0' and client_list[player]['game']["hitbox"] != '':
-
+                    print(weapon_rect)
                     enemies_list[counter]['is_attacking'] = True
                     get_damage(counter, monster_rect, weapon_rect)
 
@@ -284,7 +282,7 @@ def exists(username: str)-> bool:
 
 def append(data: str,conn) -> None:
     global data_list
-    
+
     answers = data.split(":")
     temp_list = data_list
     # client_info = copy.deepcopy(client_data)
@@ -312,7 +310,7 @@ def append(data: str,conn) -> None:
 
 def add_user(username: str) -> None:
     global data_list
-    client_list[username]= data_list    
+    client_list[username]= data_list
 
 
 def iterate_users(nearby: dict,user_data) -> None:
@@ -337,9 +335,9 @@ def receive():
 
 def main():
     global udp_server, init_conn_serv, end_conn_serv, chat_server, client_list, client_data
-    
 
-    
+
+
     init_conn_serv = Init_conn_serv(client_list,copy.deepcopy(client_data))
     thread = threading.Thread(target=init_conn_serv.main)
     thread.daemon = True
@@ -385,5 +383,5 @@ def close_all():
 if __name__ == "__main__":
     atexit.register(close_all)
     main()
-    
+
 
