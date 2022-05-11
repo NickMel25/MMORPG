@@ -79,7 +79,11 @@ class Init_conn_serv:
             dis['game']['bloodpotion'] = user_data[8]
             dis['game']['spiritinabottle'] = user_data[9]
             dis['game']['coins'] = user_data[10]           
+            
+            monster_port = conn.recv(1024).decode()
+            dis['conn']['monster_port'] = int(monster_port)
             self.client_list[username] = dis 
+            
             conn.close()
         # except ValueError as e:
 

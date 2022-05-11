@@ -16,8 +16,9 @@ class Udp_client:
 
         self.monster_port = 32456
         self.monster_udp_client = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        # self.monster_udp_client.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-        self.monster_udp_client.bind((socket.gethostbyname(socket.gethostname()), 32456))
+        
+    def bind(self,port):
+        self.monster_udp_client.bind((socket.gethostname(),port))
 
     def recv_monster_thread_handler(self):
         while True:
@@ -31,6 +32,7 @@ class Udp_client:
     def start_monster_thread(self,player, level):
         # arr = {"player" : player,
         #  "level" : level}
+
         client_performer.get_player(player, level)
         players_nearby_thread = Thread(target=self.recv_monster_thread_handler, daemon=True)
         players_nearby_thread.start()

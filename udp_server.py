@@ -31,7 +31,7 @@ end_conn_serv = None
 
 client_time = {'attack':0,'hit':0,"movement":0}
 data_list = {'username':'','direction':'','attacking':'','location':'','hitbox':'','frame':'','health':0, 'bamboo':0,'bloodpotion':0,'spiritinabottle':0,'coins':0,'health':0,'mana':0,'attack':0,'weapon':0}
-client_conn = {'ip':'',"port":0,"pubkey":'','seckey':'','pad_char':''}
+client_conn = {'ip':'',"port":0,"monster_port":0,"pubkey":'','seckey':'','pad_char':''}
 client_data = {'game':copy.deepcopy(data_list),"timers":copy.deepcopy(client_time),'conn':copy.deepcopy(client_conn)}
 client_list = {}
 enemies_list = []
@@ -165,8 +165,10 @@ def check_death(counter, player):
     if enemies_list[counter]['health'] <= 0:
 
         ans = "get_stuff"
-
-        send_for_monster(ans, (client_list[player]["conn"]['ip'], 32456),client_list[player]["game"]['username'])
+        try:
+            send_for_monster(ans, (client_list[player]["conn"]['ip'], client_list[player]["conn"]['monster_port']),client_list[player]["game"]['username'])
+        except KeyError:
+            pass
 
         xEnemy, yEnemy = get_good_placing()
 
@@ -238,8 +240,10 @@ def make_monster_string():
 def send_monsters_to_users(responses_array, pipol):
     for response in responses_array:
         for i in range(len(pipol)):
-            send_for_monster(response, (pipol[i]["conn"]['ip'], 32456),pipol[i]['game']['username'])
-
+            try:
+                send_for_monster(response, (pipol[i]["conn"]['ip'], pipol[i]["conn"]['monster_port']),pipol[i]['game']['username'])
+            except KeyError:
+                continue
 
 def monster_thread():
     thread_for_monsters_location = threading.Thread(target=enemy_player_proximity, daemon=True, args=())

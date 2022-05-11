@@ -101,6 +101,8 @@ def main():
     ip = intro_screen.get_ip()
     connection = Connection(ip)
     data = intro_screen.main(connection.init_conn_client)
+    port = connection.init_conn_client.get_sock_port()
+    connection.udp_client.bind(port)
     username = data[0]
     connection.udp_client.set_username(username)
     connection.chat_client.connect(username)        

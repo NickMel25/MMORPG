@@ -23,6 +23,14 @@ class Init_conn_client:
         result = self.client_connection.recv(1024*4).decode()
         return result.split(":")
 
+    def get_sock_port(self):
+        sock = socket.socket()
+        sock.bind(('',0))
+        port = sock.getsockname()[1]
+        sock.close()
+        self.client_connection.sendall(str(port).encode())
+        return port
+
 
 def main():
     init_conn = Init_conn_client()
