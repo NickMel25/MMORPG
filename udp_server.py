@@ -278,11 +278,11 @@ def proximity(username: str):
     return in_proximity
 
 
-def make_string(nearby: dict) -> dict:
-    for name in nearby:
-        user = nearby[name]
-        nearby[name] = f'{user["game"]["username"]}:{user["game"]["direction"]}:{user["game"]["attacking"]}:{user["game"]["location"]}:{user["game"]["hitbox"]}:{user["game"]["frame"]}'
-    return nearby
+def make_string(username: dict) -> dict:
+    # for name in nearby:
+        user = client_list[username]
+        user_data = f'{user["game"]["username"]}:{user["game"]["direction"]}:{user["game"]["attacking"]}:{user["game"]["location"]}:{user["game"]["hitbox"]}:{user["game"]["frame"]}'
+        return user_data
 
 
 def exists(username: str)-> bool:
@@ -322,9 +322,9 @@ def add_user(username: str) -> None:
     client_list[username]= data_list    
 
 
-def iterate_users(nearby: dict,conn) -> None:
+def iterate_users(nearby: dict,user_data) -> None:
     for user in nearby:
-        send(nearby[user],(conn))
+        send(user_data,(nearby[user]['conn']['ip'],nearby[user]['conn']['port']))
 
 
 def send(ans,conn):
@@ -369,10 +369,13 @@ def main():
         except TypeError:
             continue
         if data:
-            append(data,conn)
+            try:
+                append(data,conn)
+            except KeyError:
+                continue
             nearby = proximity(data.split(":")[0])
-            nearby = make_string(nearby)
-            iterate_users(nearby,conn)
+            user_data = make_string(data.split(":")[0])
+            iterate_users(nearby,user_data)
 
 
 def close_all():
