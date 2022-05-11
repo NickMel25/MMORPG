@@ -66,17 +66,6 @@ monster_data = {
                'notice_radius': 300, 'location': [], 'attack': False}}
 
 
-
-# def get_client_list() -> dict:
-#     return client_list,client_data.copy()
-
-
-
-
-
-
-
-
 # ============================================================================================================================================
 # -----------------------------------------------------------------MONSTER--------------------------------------------------------------------
 # ============================================================================================================================================
@@ -219,7 +208,7 @@ def enemy_player_proximity():
 
                 weapon_rect = client_list[player]['game']["weapon"]
                 monster_rect = pygame.Rect(enemies_list[counter]['location'][0], enemies_list[counter]['location'][1],64, 64)
-                # check_player_enemy_collision(monster_rect, client_list[player]['game']["hitbox"], counter, player)
+                check_player_enemy_collision(monster_rect, client_list[player]['game']["hitbox"], counter, player)
 
                 if distance <= monster_data[enemies_list[counter]['type']]['attack_radius'] and client_list[player]['game']["attacking"] == True and client_list[player]['game']["weapon"] != '0' and client_list[player]['game']["hitbox"] != '':
 
@@ -292,12 +281,10 @@ def exists(username: str)-> bool:
 def append(data: str,conn) -> None:
     global data_list
     
-
-    
     answers = data.split(":")
     temp_list = data_list
     # client_info = copy.deepcopy(client_data)
-    # client_list[answers[0]]= copy.deepcopy(client_info)
+    # client_list[answers[0]]= copy.deepcopy(client_data)
     client_info = client_list[answers[0]]
     client_info['game']['username'] = answers[0]
     client_info['game']['direction']= answers[1]
@@ -317,6 +304,8 @@ def append(data: str,conn) -> None:
     client_info['game']['last_attacked'] = 0
     client_info['conn']['ip'] = conn[0]
     client_info['conn']['port'] = conn[1]
+
+
 def add_user(username: str) -> None:
     global data_list
     client_list[username]= data_list    

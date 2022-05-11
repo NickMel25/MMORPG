@@ -157,6 +157,7 @@ def print_monsters_around_player(data):
 
     if health == '0':
         level.visible_sprites.remove(current_enemy)
+        get_the_stuff()
 
     temp_enemy_group.remove(current_enemy)
 

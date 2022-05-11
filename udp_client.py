@@ -3,8 +3,6 @@ from threading import Thread
 import client_performer
 
 
-
-
 class Udp_client:
     def __init__(self, ip : str) -> None:
 
@@ -21,19 +19,15 @@ class Udp_client:
         # self.monster_udp_client.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         self.monster_udp_client.bind((socket.gethostbyname(socket.gethostname()), 32456))
 
-
-
     def recv_monster_thread_handler(self):
         while True:
-            monster_data = self.recieve_for_monster()
-            if (monster_data == "get_stuff"):
-                client_performer.get_the_stuff()
-            else:
+            try:
+                monster_data = self.recieve_for_monster()
                 answer = monster_data.decode().split(":")
-                try:
-                    client_performer.print_monsters_around_player(answer)
-                except:
-                    pass
+                client_performer.print_monsters_around_player(answer)
+            except:
+                pass
+
     def start_monster_thread(self,player, level):
         # arr = {"player" : player,
         #  "level" : level}
@@ -41,16 +35,9 @@ class Udp_client:
         players_nearby_thread = Thread(target=self.recv_monster_thread_handler, daemon=True)
         players_nearby_thread.start()
 
-
     def recieve_for_monster(self):
         msg, conn = self.monster_udp_client.recvfrom(1024)
         return msg
-
-
- 
-
-
-
 
     def close_connection(self):
         self.udp_client.close()
