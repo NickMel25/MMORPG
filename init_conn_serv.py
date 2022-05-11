@@ -56,30 +56,30 @@ class Init_conn_serv:
 
             # username = user_data[0]
             # dis = self.client_data.deepcopy()
-            # dis = copy.deepcopy(self.client_data)
-            self.client_list[username] = {{},{}}
-            self.client_list[username]['conn']['ip'] = addr[0]
-            self.client_list[username]['game']['username'] = username
-            self.client_list[username]['game']['health'] = user_data[1]
-            self.client_list[username]['game']['mana'] = user_data[2]
-            self.client_list[username]['game']['location'] = (user_data[3],user_data[4])
-            self.client_list[username]['game']['attack'] = user_data[5]
-            self.client_list[username]['game']['bamboo'] = user_data[7]
-            self.client_list[username]['game']['bloodpotion'] = user_data[8]
-            self.client_list[username]['game']['spiritinabottle'] = user_data[9]
-            self.client_list[username]['game']['coins'] = user_data[10]
-
-            # dis['conn']['ip'] = addr[0]
-            # dis['game']['username'] = username
-            # dis['game']['health'] = user_data[1]
-            # dis['game']['mana'] = user_data[2]
-            # dis['game']['location'] = (user_data[3],user_data[4])
-            # dis['game']['attack'] = user_data[5]
-            # dis['game']['bamboo'] = user_data[7]
-            # dis['game']['bloodpotion'] = user_data[8]
-            # dis['game']['spiritinabottle'] = user_data[9]
-            # dis['game']['coins'] = user_data[10]           
-            # self.client_list[username] = dis 
+          
+            # self.client_list[username] = copy.deepcopy(self.client_data)
+            # self.client_list[username]['conn']['ip'] = addr[0]
+            # self.client_list[username]['game']['username'] = username
+            # self.client_list[username]['game']['health'] = user_data[1]
+            # self.client_list[username]['game']['mana'] = user_data[2]
+            # self.client_list[username]['game']['location'] = (user_data[3],user_data[4])
+            # self.client_list[username]['game']['attack'] = user_data[5]
+            # self.client_list[username]['game']['bamboo'] = user_data[7]
+            # self.client_list[username]['game']['bloodpotion'] = user_data[8]
+            # self.client_list[username]['game']['spiritinabottle'] = user_data[9]
+            # self.client_list[username]['game']['coins'] = user_data[10]
+            dis = copy.deepcopy(self.client_data)
+            dis['conn']['ip'] = addr[0]
+            dis['game']['username'] = username
+            dis['game']['health'] = user_data[1]
+            dis['game']['mana'] = user_data[2]
+            dis['game']['location'] = (user_data[3],user_data[4])
+            dis['game']['attack'] = user_data[5]
+            dis['game']['bamboo'] = user_data[7]
+            dis['game']['bloodpotion'] = user_data[8]
+            dis['game']['spiritinabottle'] = user_data[9]
+            dis['game']['coins'] = user_data[10]           
+            self.client_list[username] = dis 
             conn.close()
         # except ValueError as e:
 
